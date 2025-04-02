@@ -125,6 +125,39 @@
             margin-top: 5px;
         }
         
+        .holidays-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .holidays-card {
+            background-color: #f1f9ff;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        
+        .holidays-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .holidays-date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .holidays-countdown {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
         @media (max-width: 600px) {
             .countdown-grid {
                 grid-template-columns: 1fr;
@@ -146,6 +179,15 @@
             </div>
         </div>
         <p id="daysInfo">Informations sur l'année scolaire...</p>
+    </div>
+    
+    <div class="holidays-container">
+        <h2>Prochaines vacances scolaires</h2>
+        <div class="holidays-card">
+            <div class="holidays-name" id="holidays-name">Chargement...</div>
+            <div class="holidays-date" id="holidays-date"></div>
+            <div class="holidays-countdown" id="holidays-countdown"></div>
+        </div>
     </div>
     
     <div class="countdown-grid">
@@ -229,6 +271,20 @@
         const i2dExamDate = new Date('2025-06-19T14:00:00');
         const pcmExamDate = new Date('2025-06-21T08:00:00');
         
+        // Dates des vacances scolaires 2024-2025 (toutes zones confondues)
+        const holidays = [
+            { name: "Vacances de la Toussaint", start: new Date('2024-10-19T16:00:00'), end: new Date('2024-11-04T08:00:00') },
+            { name: "Vacances de Noël", start: new Date('2024-12-21T16:00:00'), end: new Date('2025-01-06T08:00:00') },
+            { name: "Vacances d'hiver (Zone A)", start: new Date('2025-02-15T16:00:00'), end: new Date('2025-03-03T08:00:00') },
+            { name: "Vacances d'hiver (Zone B)", start: new Date('2025-02-22T16:00:00'), end: new Date('2025-03-10T08:00:00') },
+            { name: "Vacances d'hiver (Zone C)", start: new Date('2025-02-08T16:00:00'), end: new Date('2025-02-24T08:00:00') },
+            { name: "Vacances de printemps (Zone A)", start: new Date('2025-04-12T16:00:00'), end: new Date('2025-04-28T08:00:00') },
+            { name: "Vacances de printemps (Zone B)", start: new Date('2025-04-19T16:00:00'), end: new Date('2025-05-05T08:00:00') },
+            { name: "Vacances de printemps (Zone C)", start: new Date('2025-04-05T16:00:00'), end: new Date('2025-04-21T08:00:00') },
+            { name: "Pont de l'Ascension", start: new Date('2025-05-29T16:00:00'), end: new Date('2025-06-02T08:00:00') },
+            { name: "Vacances d'été", start: new Date('2025-07-05T16:00:00'), end: new Date('2025-09-01T08:00:00') }
+        ];
+        
         // Mise à jour des dates affichées
         document.getElementById('philo-date').textContent = 'Date: ' + formatDate(philoExamDate);
         document.getElementById('i2d-date').textContent = 'Date: ' + formatDate(i2dExamDate);
@@ -269,6 +325,7 @@
             updateCountdown(philoExamDate, 'philo');
             updateCountdown(i2dExamDate, 'i2d');
             updateCountdown(pcmExamDate, 'pcm');
+            updateNextHolidays();
         }
         
         // Fonction pour calculer et afficher un compte à rebours
@@ -295,6 +352,57 @@
             document.getElementById(`${elementPrefix}-hours`).textContent = hours;
             document.getElementById(`${elementPrefix}-minutes`).textContent = minutes;
             document.getElementById(`${elementPrefix}-seconds`).textContent = seconds;
+        }
+        
+        // Fonction pour trouver et afficher les prochaines vacances
+        function updateNextHolidays() {
+            const now = new Date();
+            let nextHolidays = null;
+            
+            // Trouver les prochaines vacances
+            for (const holiday of holidays) {
+                if (holiday.start > now) {
+                    if (!nextHolidays || holiday.start < nextHolidays.start) {
+                        nextHolidays = holiday;
+                    }
+                }
+            }
+            
+            // Vérifier si on est actuellement en vacances
+            let currentHolidays = null;
+            for (const holiday of holidays) {
+                if (now >= holiday.start && now <= holiday.end) {
+                    currentHolidays = holiday;
+                    break;
+                }
+            }
+            
+            if (currentHolidays) {
+                // On est en vacances
+                document.getElementById('holidays-name').textContent = currentHolidays.name;
+                document.getElementById('holidays-date').textContent = 
+                    `Du ${formatDate(currentHolidays.start)} au ${formatDate(currentHolidays.end)}`;
+                
+                const remainingTime = currentHolidays.end - now;
+                const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+                document.getElementById('holidays-countdown').textContent = 
+                    `Fin des vacances dans ${days} jour${days > 1 ? 's' : ''}`;
+            } else if (nextHolidays) {
+                // Prochaines vacances
+                document.getElementById('holidays-name').textContent = nextHolidays.name;
+                document.getElementById('holidays-date').textContent = 
+                    `Du ${formatDate(nextHolidays.start)} au ${formatDate(nextHolidays.end)}`;
+                
+                const timeUntilHolidays = nextHolidays.start - now;
+                const days = Math.floor(timeUntilHolidays / (1000 * 60 * 60 * 24));
+                document.getElementById('holidays-countdown').textContent = 
+                    `Dans ${days} jour${days > 1 ? 's' : ''}`;
+            } else {
+                // Aucune vacance prévue
+                document.getElementById('holidays-name').textContent = "Aucune vacance prochainement";
+                document.getElementById('holidays-date').textContent = "";
+                document.getElementById('holidays-countdown').textContent = "";
+            }
         }
         
         // Initialisation et mise à jour toutes les secondes
