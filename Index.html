@@ -1,40 +1,315 @@
-<!DOCTYPE html><html lang="fr">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suivi du Bac STI2D</title>
-    <script>
-        function updateCountdown() {
-            const today = new Date();
-            const startYear = new Date(today.getFullYear(), 8, 1); // 1er septembre
-            const endYear = new Date(today.getFullYear(), 5, 30); // 30 juinconst exams = [
-            { name: "Philosophie", date: new Date(today.getFullYear(), 5, 17) }, // 17 juin
-            { name: "2I2D", date: new Date(today.getFullYear(), 5, 19) }, // 19 juin
-            { name: "Physique-Chimie-Maths", date: new Date(today.getFullYear(), 5, 21) } // 21 juin
-        ];
+    <title>Suivi BAC STI2D</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
         
-        let yearProgress = ((today - startYear) / (endYear - startYear)) * 100;
-        document.getElementById("progress").textContent = `L'année est terminée à ${yearProgress.toFixed(2)}%`;
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
         
-        let examList = "";
-        exams.forEach(exam => {
-            let daysLeft = Math.ceil((exam.date - today) / (1000 * 60 * 60 * 24));
-            if (daysLeft >= 0) {
-                examList += `<p>${exam.name} est dans ${daysLeft} jours.</p>`;
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .progress-container {
+            margin-bottom: 40px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar-container {
+            background-color: #e0e0e0;
+            height: 25px;
+            border-radius: 20px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 20px;
+            position: relative;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .countdown-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .countdown-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .countdown-title {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        .countdown-time {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .time-value {
+            background-color: #3498db;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+        
+        .time-label {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            color: #7f8c8d;
+        }
+        
+        .date-info {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            .countdown-grid {
+                grid-template-columns: 1fr;
             }
-        });
-        
-        document.getElementById("exams").innerHTML = examList;
-    }
-    setInterval(updateCountdown, 1000 * 60 * 60); // Mise à jour chaque heure
-    window.onload = updateCountdown;
-</script>
-
+        }
+    </style>
 </head>
 <body>
-    <h1>Suivi du Bac STI2D</h1>
-    <p id="progress"></p>
-    <h2>Épreuves à venir :</h2>
-    <div id="exams"></div>
+    <div class="header">
+        <h1>Suivi BAC STI2D</h1>
+        <p>Année scolaire 2024-2025</p>
+    </div>
+    
+    <div class="progress-container">
+        <h2>Progression de l'année scolaire</h2>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="yearProgress">
+                <span class="progress-text" id="yearProgressText">0%</span>
+            </div>
+        </div>
+        <p id="daysInfo">Informations sur l'année scolaire...</p>
+    </div>
+    
+    <div class="countdown-grid">
+        <div class="countdown-card">
+            <div class="countdown-title">Philosophie</div>
+            <div class="countdown-time" id="philo-countdown">
+                <div class="time-unit">
+                    <div class="time-value" id="philo-days">0</div>
+                    <div class="time-label">Jours</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="philo-hours">0</div>
+                    <div class="time-label">Heures</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="philo-minutes">0</div>
+                    <div class="time-label">Minutes</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="philo-seconds">0</div>
+                    <div class="time-label">Sec</div>
+                </div>
+            </div>
+            <div class="date-info" id="philo-date">Date: 17 juin 2025</div>
+        </div>
+        
+        <div class="countdown-card">
+            <div class="countdown-title">2I2D</div>
+            <div class="countdown-time" id="i2d-countdown">
+                <div class="time-unit">
+                    <div class="time-value" id="i2d-days">0</div>
+                    <div class="time-label">Jours</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="i2d-hours">0</div>
+                    <div class="time-label">Heures</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="i2d-minutes">0</div>
+                    <div class="time-label">Minutes</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="i2d-seconds">0</div>
+                    <div class="time-label">Sec</div>
+                </div>
+            </div>
+            <div class="date-info" id="i2d-date">Date: 19 juin 2025</div>
+        </div>
+        
+        <div class="countdown-card">
+            <div class="countdown-title">Physique-Chimie-Maths</div>
+            <div class="countdown-time" id="pcm-countdown">
+                <div class="time-unit">
+                    <div class="time-value" id="pcm-days">0</div>
+                    <div class="time-label">Jours</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="pcm-hours">0</div>
+                    <div class="time-label">Heures</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="pcm-minutes">0</div>
+                    <div class="time-label">Minutes</div>
+                </div>
+                <div class="time-unit">
+                    <div class="time-value" id="pcm-seconds">0</div>
+                    <div class="time-label">Sec</div>
+                </div>
+            </div>
+            <div class="date-info" id="pcm-date">Date: 21 juin 2025</div>
+        </div>
+    </div>
+
+    <script>
+        // Dates de l'année scolaire
+        const startDate = new Date('2024-09-02T08:00:00');
+        const endDate = new Date('2025-07-05T16:00:00');
+        
+        // Dates des examens (à adapter selon le calendrier officiel)
+        const philoExamDate = new Date('2025-06-17T08:00:00');
+        const i2dExamDate = new Date('2025-06-19T14:00:00');
+        const pcmExamDate = new Date('2025-06-21T08:00:00');
+        
+        // Mise à jour des dates affichées
+        document.getElementById('philo-date').textContent = 'Date: ' + formatDate(philoExamDate);
+        document.getElementById('i2d-date').textContent = 'Date: ' + formatDate(i2dExamDate);
+        document.getElementById('pcm-date').textContent = 'Date: ' + formatDate(pcmExamDate);
+        
+        // Fonction pour formater une date
+        function formatDate(date) {
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            return date.toLocaleDateString('fr-FR', options);
+        }
+        
+        // Fonction pour calculer le pourcentage de l'année écoulée
+        function updateYearProgress() {
+            const now = new Date();
+            const totalDuration = endDate - startDate;
+            const elapsed = now - startDate;
+            
+            let percentage = (elapsed / totalDuration) * 100;
+            percentage = Math.min(Math.max(percentage, 0), 100); // Limiter entre 0 et 100%
+            
+            const progressBar = document.getElementById('yearProgress');
+            const progressText = document.getElementById('yearProgressText');
+            
+            progressBar.style.width = percentage.toFixed(2) + '%';
+            progressText.textContent = percentage.toFixed(2) + '%';
+            
+            // Calcul des jours écoulés et restants
+            const daysTotal = Math.ceil(totalDuration / (1000 * 60 * 60 * 24));
+            const daysElapsed = Math.ceil(elapsed / (1000 * 60 * 60 * 24));
+            const daysRemaining = Math.max(0, daysTotal - daysElapsed);
+            
+            document.getElementById('daysInfo').textContent = 
+                `Jour ${daysElapsed} sur ${daysTotal} de l'année scolaire (${daysRemaining} jours restants)`;
+        }
+        
+        // Fonction pour mettre à jour les compteurs
+        function updateCountdowns() {
+            updateCountdown(philoExamDate, 'philo');
+            updateCountdown(i2dExamDate, 'i2d');
+            updateCountdown(pcmExamDate, 'pcm');
+        }
+        
+        // Fonction pour calculer et afficher un compte à rebours
+        function updateCountdown(targetDate, elementPrefix) {
+            const now = new Date();
+            const difference = targetDate - now;
+            
+            let days, hours, minutes, seconds;
+            
+            if (difference <= 0) {
+                // L'événement est passé
+                days = hours = minutes = seconds = 0;
+                document.getElementById(`${elementPrefix}-countdown`).parentElement.style.backgroundColor = '#e0e0e0';
+            } else {
+                // Calcul des différentes unités de temps
+                days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            }
+            
+            // Mise à jour des affichages
+            document.getElementById(`${elementPrefix}-days`).textContent = days;
+            document.getElementById(`${elementPrefix}-hours`).textContent = hours;
+            document.getElementById(`${elementPrefix}-minutes`).textContent = minutes;
+            document.getElementById(`${elementPrefix}-seconds`).textContent = seconds;
+        }
+        
+        // Initialisation et mise à jour toutes les secondes
+        function init() {
+            updateYearProgress();
+            updateCountdowns();
+            
+            setInterval(() => {
+                updateYearProgress();
+                updateCountdowns();
+            }, 1000);
+        }
+        
+        // Démarrer l'application
+        init();
+    </script>
 </body>
 </html>
