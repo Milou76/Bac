@@ -1,0 +1,40 @@
+<!DOCTYPE html><html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi du Bac STI2D</title>
+    <script>
+        function updateCountdown() {
+            const today = new Date();
+            const startYear = new Date(today.getFullYear(), 8, 1); // 1er septembre
+            const endYear = new Date(today.getFullYear(), 5, 30); // 30 juinconst exams = [
+            { name: "Philosophie", date: new Date(today.getFullYear(), 5, 17) }, // 17 juin
+            { name: "2I2D", date: new Date(today.getFullYear(), 5, 19) }, // 19 juin
+            { name: "Physique-Chimie-Maths", date: new Date(today.getFullYear(), 5, 21) } // 21 juin
+        ];
+        
+        let yearProgress = ((today - startYear) / (endYear - startYear)) * 100;
+        document.getElementById("progress").textContent = `L'année est terminée à ${yearProgress.toFixed(2)}%`;
+        
+        let examList = "";
+        exams.forEach(exam => {
+            let daysLeft = Math.ceil((exam.date - today) / (1000 * 60 * 60 * 24));
+            if (daysLeft >= 0) {
+                examList += `<p>${exam.name} est dans ${daysLeft} jours.</p>`;
+            }
+        });
+        
+        document.getElementById("exams").innerHTML = examList;
+    }
+    setInterval(updateCountdown, 1000 * 60 * 60); // Mise à jour chaque heure
+    window.onload = updateCountdown;
+</script>
+
+</head>
+<body>
+    <h1>Suivi du Bac STI2D</h1>
+    <p id="progress"></p>
+    <h2>Épreuves à venir :</h2>
+    <div id="exams"></div>
+</body>
+</html>
