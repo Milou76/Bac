@@ -1,112 +1,144 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portefeuille Boursier</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mon Portefeuille Boursier</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .gain { color: green; }
+    .perte { color: red; }
+    input { padding: 5px; margin-right: 10px; }
+    button { padding: 5px 10px; }
+    form { margin-top: 30px; }
+    #logs { background: #222; color: #0f0; padding: 10px; margin-top: 30px; font-family: monospace; max-height: 200px; overflow-y: auto; }
   </style>
 </head>
 <body>
 
-<h2>Portefeuille Boursier</h2>
-<table id="portfolio">
+<h1>Mon Portefeuille Boursier</h1>
+
+<table>
   <thead>
     <tr>
-      <th>Action</th>
+      <th>Entreprise</th>
+      <th>Ticker</th>
       <th>Quantité</th>
-      <th>Prix d'Achat (€)</th>
-      <th>Prix Actuel (€)</th>
-      <th>Valeur Totale (€)</th>
-      <th>Gain (€)</th>
+      <th>Prix d’achat (€)</th>
+      <th>Cours actuel</th>
+      <th>Valeur actuelle (€)</th>
+      <th>Gain/Perte (€)</th>
+      <th>Performance (%)</th>
+      <th>Actions</th>
     </tr>
   </thead>
-  <tbody>
-    <!-- Les données du portefeuille seront insérées ici -->
-  </tbody>
+  <tbody id="portfolio-body"></tbody>
 </table>
 
+<form id="add-stock-form">
+  <h2>Ajouter une action</h2>
+  <input type="text" id="name" placeholder="Nom" required>
+  <input type="text" id="ticker" placeholder="Ticker (ex: AAPL)" required>
+  <input type="number" id="quantity" placeholder="Quantité" step="0.01" required>
+  <input type="number" id="avgPrice" placeholder="Prix d’achat (€)" step="0.01" required>
+  <button type="submit">Ajouter</button>
+</form>
+
+<h2>Console (logs)</h2>
+<div id="logs">Logs ici :</div>
+
 <script>
-// Liste des actions dans ton portefeuille
-const portfolio = [
-  { name: 'Apple', ticker: 'AAPL', quantity: 0.5, avgPrice: 100 },
-  { name: 'Schneider Electric', ticker: 'SU.PA', quantity: 1, avgPrice: 200 },
-  // Ajoute ici d'autres actions si nécessaire
-];
+  const apiKey = "d08jvjhr01qju5m6vpd0d08jvjhr01qju5m6vpdg";
+  const tableBody = document.getElementById("portfolio-body");
+  const form = document.getElementById("add-stock-form");
+  const logBox = document.getElementById("logs");
 
-// Ta clé API Finnhub
-const apiKey = 'd08jvjhr01qju5m6vpd0d08jvjhr01qju5m6vpdg';
+  function log(msg) {
+    const time = new Date().toLocaleTimeString();
+    logBox.innerHTML += `<div>[${time}] ${msg}</div>`;
+    logBox.scrollTop = logBox.scrollHeight;
+  }
 
-// Fonction pour obtenir le prix actuel d'une action
-async function getStockPrice(symbol) {
-  const url = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`;
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
+  function savePortfolio() {
+    localStorage.setItem("portfolio", JSON.stringify(portfolio));
+    log("Portefeuille sauvegardé.");
+  }
 
-    if (data.error) {
-      console.error('Erreur lors de la récupération des données pour', symbol);
+  async function fetchStockPrice(ticker) {
+    const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`;
+    log("Appel API : " + url);
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data && data.c) {
+        const price = parseFloat(data.c);
+        log(`Prix reçu pour ${ticker} : ${price}`);
+        return price;
+      } else {
+        throw new Error("Réponse invalide");
+      }
+    } catch (err) {
+      log("Erreur API pour " + ticker + ": " + err.message);
       return null;
     }
-
-    return data.c; // Prix actuel de l'action
-  } catch (error) {
-    console.error('Erreur d\'appel API pour', symbol, error);
-    return null;
   }
-}
 
-// Fonction pour afficher les données du portefeuille
-async function displayPortfolio() {
-  const portfolioTable = document.getElementById('portfolio').getElementsByTagName('tbody')[0];
+  async function renderPortfolio() {
+    tableBody.innerHTML = "";
+    for (let i = 0; i < portfolio.length; i++) {
+      const stock = portfolio[i];
+      const currentPrice = await fetchStockPrice(stock.ticker);
+      if (!currentPrice) continue;
 
-  // Parcours chaque action du portefeuille
-  for (const stock of portfolio) {
-    const price = await getStockPrice(stock.ticker);
-    
-    if (price !== null) {
-      const totalValue = (price * stock.quantity).toFixed(2);
-      const gain = ((price - stock.avgPrice) * stock.quantity).toFixed(2);
+      const valueNow = currentPrice * stock.quantity;
+      const cost = stock.avgPrice * stock.quantity;
+      const gain = valueNow - cost;
+      const perf = (gain / cost) * 100;
 
-      const row = portfolioTable.insertRow();
-
+      const row = document.createElement("tr");
       row.innerHTML = `
         <td>${stock.name}</td>
+        <td>${stock.ticker}</td>
         <td>${stock.quantity}</td>
-        <td>${stock.avgPrice} €</td>
-        <td>${price.toFixed(2)} €</td>
-        <td>${totalValue} €</td>
-        <td>${gain} €</td>
+        <td>${stock.avgPrice.toFixed(2)}</td>
+        <td>${currentPrice.toFixed(2)}</td>
+        <td>${valueNow.toFixed(2)}</td>
+        <td class="${gain >= 0 ? 'gain' : 'perte'}">${gain.toFixed(2)}</td>
+        <td class="${perf >= 0 ? 'gain' : 'perte'}">${perf.toFixed(2)}%</td>
+        <td><button onclick="deleteStock(${i})">Supprimer</button></td>
       `;
-    } else {
-      const row = portfolioTable.insertRow();
-      row.innerHTML = `
-        <td>${stock.name}</td>
-        <td colspan="5">Erreur dans la récupération des données.</td>
-      `;
+      tableBody.appendChild(row);
     }
+    log("Portefeuille affiché.");
   }
-}
 
-// Appel de la fonction pour afficher les données dès que le site est chargé
-window.onload = displayPortfolio;
+  function deleteStock(index) {
+    log("Suppression index : " + index);
+    portfolio.splice(index, 1);
+    savePortfolio();
+    renderPortfolio();
+  }
 
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value;
+    const ticker = document.getElementById("ticker").value.toUpperCase();
+    const quantity = parseFloat(document.getElementById("quantity").value);
+    const avgPrice = parseFloat(document.getElementById("avgPrice").value);
+
+    log(`Ajouté : ${name} | ${ticker} | ${quantity} actions à ${avgPrice}€`);
+    portfolio.push({ name, ticker, quantity, avgPrice });
+    savePortfolio();
+    renderPortfolio();
+    form.reset();
+  });
+
+  let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
+  log("Portefeuille chargé : " + JSON.stringify(portfolio));
+  renderPortfolio();
 </script>
 
 </body>
