@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mon Portefeuille Boursier</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    th { background-color: #f2f2f2; }
+    .gain { color: green; }
+    .perte { color: red; }
+    input { padding: 5px; margin-right: 10px; }
+    button { padding: 5px 10px; }
+    form { margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+<h1>Suivi de Mon Portefeuille Boursier</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Entreprise</th>
+      <th>Ticker</th>
+      <th>Quantité</th>
+      <th>Prix d’achat (€)</th>
+      <th>Cours actuel (€/$)</th>
+      <th>Valeur actuelle (€)</th>
+      <th>Gain/Perte (€)</th>
+      <th>Performance (%)</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="portfolio-body">
+    <!-- Les lignes se remplissent automatiquement -->
+  </tbody>
+</table>
+
+<form id="add-stock-form">
+  <h2>Ajouter une action</h2>
+  <input type="text" id="name" placeholder="Nom" required>
+  <input type="text" id="ticker" placeholder="Ticker (ex: EPA:SU)" required>
+  <input type="number" id="quantity" placeholder="Quantité" step="0.01" required>
+  <input type="number" id="avgPrice" placeholder="Prix d’achat (€)" step="0.01" required>
+  <button type="submit">Ajouter</button>
+</form>
+
+<script>
+  const apiKey = "c31f21c961153634e1619cb323c51ee0cd8836f309dcf70ad2ba5d69d6e3c477";
+  const tableBody = document.getElementById("portfolio-body");
+  const form = document.getElementById("add-stock-form");
+
+  let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
+
+  async function fetchStockPrice(ticker) {
+    const url = `https://serpapi.com/search.json?engine=google_finance&q=${encodeURIComponent(ticker)}&api_key=${apiKey}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    try {
+      return parseFloat(data.summary.price.replace(',', ''));
+    } catch {
+      return null;
+    }
+  }
+
+  function savePortfolio() {
+    localStorage.setItem("portfolio", JSON.stringify(portfolio));
+  }
+
+  async function renderPortfolio() {
+    tableBody.innerHTML = "";
+    for (let i = 0; i < portfolio.length; i++) {
+      const stock = portfolio[i];
+      const currentPrice = await fetchStockPrice(stock.ticker);
+      if (!currentPrice) continue;
+      const valueNow = currentPrice * stock.quantity;
+      const cost = stock.avgPrice * stock.quantity;
+      const gain = valueNow - cost;
+      const perf = (gain / cost) * 100;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${stock.name}</td>
+        <td>${stock.ticker}</td>
+        <td>${stock.quantity}</td>
+        <td>${stock.avgPrice.toFixed(2)}</td>
+        <td>${currentPrice.toFixed(2)}</td>
+        <td>${valueNow.toFixed(2)}</td>
+        <td class="${gain >= 0 ? 'gain' : 'perte'}">${gain.toFixed(2)}</td>
+        <td class="${perf >= 0 ? 'gain' : 'perte'}">${perf.toFixed(2)}%</td>
+        <td><button onclick="deleteStock(${i})">Supprimer</button></td>
+      `;
+      tableBody.appendChild(row);
+    }
+  }
+
+  function deleteStock(index) {
+    portfolio.splice(index, 1);
+    savePortfolio();
+    renderPortfolio();
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.getElementById("name").value;
+    const ticker = document.getElementById("ticker").value;
+    const quantity = parseFloat(document.getElementById("quantity").value);
+    const avgPrice = parseFloat(document.getElementById("avgPrice").value);
+
+    portfolio.push({ name, ticker, quantity, avgPrice });
+    savePortfolio();
+    renderPortfolio();
+    form.reset();
+  });
+
+  renderPortfolio();
+</script>
+
+</body>
+</html>
