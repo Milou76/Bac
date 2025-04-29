@@ -147,6 +147,17 @@
       background-color: #bd2130;
     }
     
+    .btn-update-price {
+      background-color: var(--secondary-color);
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      margin-left: 5px;
+    }
+    
+    .btn-update-price:hover {
+      background-color: #5a7eb9;
+    }
+    
     .summary {
       display: flex;
       justify-content: space-between;
@@ -327,32 +338,12 @@ async function getStockPrice(symbol) {
   } catch (error) {
     console.error('Erreur d\'appel API pour', symbol, error);
     
-    // Tenter avec une API alternative pour les actions Euronext si la première tentative échoue
-    if (symbol.includes('.PA')) {
-      return await getFallbackStockPrice(symbol);
-    }
+    // Nous gérons maintenant la saisie manuelle du prix dans la fonction displayPortfolio
     return null;
   }
 }
 
-// Fonction alternative pour obtenir le prix d'une action (simulée pour l'exemple)
-async function getFallbackStockPrice(symbol) {
-  // Dans un vrai cas, vous pourriez appeler une autre API comme Yahoo Finance
-  // Pour l'exemple, on va simuler des valeurs
-  console.log('Utilisation de l\'API de secours pour', symbol);
-  
-  // Simuler quelques valeurs connues pour les actions françaises courantes
-  const mockPrices = {
-    'SU.PA': 170.56,    // Schneider Electric
-    'BNP.PA': 60.32,    // BNP Paribas
-    'MC.PA': 723.10,    // LVMH
-    'OR.PA': 437.20,    // L'Oréal
-    'AI.PA': 137.45     // Air Liquide
-  };
-  
-  // Retourner un prix par défaut si le symbole exact n'est pas connu
-  return mockPrices[symbol] || 100.00;
-}
+// La fonction getFallbackStockPrice a été intégrée directement dans displayPortfolio
 
 // Fonction pour afficher les données du portefeuille
 async function displayPortfolio() {
@@ -371,7 +362,40 @@ async function displayPortfolio() {
 
   // Parcours chaque action du portefeuille
   for (const stock of portfolio) {
-    const price = await getStockPrice(stock.ticker);
+    let price;
+    
+    try {
+      price = await getStockPrice(stock.ticker);
+      
+      // Si on n'a pas pu obtenir un prix valide, demander à l'utilisateur
+      if (price === null || price <= 0) {
+        const storedPrices = JSON.parse(localStorage.getItem('manualStockPrices') || '{}');
+        
+        if (storedPrices[stock.ticker]) {
+          // Utiliser le prix enregistré manuellement précédemment
+          price = storedPrices[stock.ticker];
+        } else {
+          // Demander à l'utilisateur d'entrer le prix
+          const userPrice = prompt(
+            `Impossible de récupérer le prix actuel pour ${stock.name} (${stock.ticker}).\n` +
+            `Veuillez entrer le prix actuel en euros :`
+          );
+          
+          if (userPrice !== null && userPrice !== '' && !isNaN(parseFloat(userPrice))) {
+            price = parseFloat(userPrice);
+            
+            // Sauvegarder ce prix pour les prochaines fois
+            storedPrices[stock.ticker] = price;
+            localStorage.setItem('manualStockPrices', JSON.stringify(storedPrices));
+          } else {
+            price = null;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération du prix:", error);
+      price = null;
+    }
     
     const row = portfolioTable.insertRow();
     
@@ -395,14 +419,20 @@ async function displayPortfolio() {
         <td class="text-right">${totalStockValue.toFixed(2)} €</td>
         <td class="text-right ${gain >= 0 ? 'gain-positive' : 'gain-negative'}">${gain.toFixed(2)} €</td>
         <td class="text-right ${variation >= 0 ? 'gain-positive' : 'gain-negative'}">${variation.toFixed(2)}%</td>
-        <td><button class="btn-delete" data-ticker="${stock.ticker}">Supprimer</button></td>
+        <td>
+          <button class="btn-delete" data-ticker="${stock.ticker}">Supprimer</button>
+          <button class="btn-update-price" data-ticker="${stock.ticker}" data-name="${stock.name}">Maj Prix</button>
+        </td>
       `;
     } else {
       row.innerHTML = `
         <td>${stock.name}</td>
         <td>${stock.ticker}</td>
         <td colspan="6">Erreur dans la récupération des données.</td>
-        <td><button class="btn-delete" data-ticker="${stock.ticker}">Supprimer</button></td>
+        <td>
+          <button class="btn-delete" data-ticker="${stock.ticker}">Supprimer</button>
+          <button class="btn-update-price" data-ticker="${stock.ticker}" data-name="${stock.name}">Maj Prix</button>
+        </td>
       `;
     }
   }
@@ -428,6 +458,38 @@ async function displayPortfolio() {
       removeStock(ticker);
     });
   });
+  
+  // Ajouter les écouteurs d'événements pour les boutons de mise à jour du prix
+  const updatePriceButtons = document.querySelectorAll('.btn-update-price');
+  updatePriceButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const ticker = this.getAttribute('data-ticker');
+      const name = this.getAttribute('data-name');
+      updateStockPrice(ticker, name);
+    });
+  });
+}
+
+// Fonction pour mettre à jour manuellement le prix d'une action
+function updateStockPrice(ticker, name) {
+  const userPrice = prompt(
+    `Entrez le prix actuel pour ${name} (${ticker}) en euros :`
+  );
+  
+  if (userPrice === null || userPrice === '' || isNaN(parseFloat(userPrice))) {
+    alert('Prix invalide. Opération annulée.');
+    return;
+  }
+  
+  const price = parseFloat(userPrice);
+  
+  // Sauvegarder le prix dans localStorage
+  const storedPrices = JSON.parse(localStorage.getItem('manualStockPrices') || '{}');
+  storedPrices[ticker] = price;
+  localStorage.setItem('manualStockPrices', JSON.stringify(storedPrices));
+  
+  // Rafraîchir l'affichage
+  displayPortfolio();
 }
 
 // Fonction pour supprimer une action du portefeuille
