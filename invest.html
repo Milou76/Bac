@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mon Portefeuille Boursier</title>
+  <title>Portefeuille Boursier Amélioré</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -11,46 +10,41 @@
     th { background-color: #f2f2f2; }
     .gain { color: green; }
     .perte { color: red; }
-    input { padding: 5px; margin-right: 10px; }
+    input, select { padding: 5px; margin: 5px; }
     button { padding: 5px 10px; }
-    form { margin-top: 30px; }
     #logs { background: #222; color: #0f0; padding: 10px; margin-top: 30px; font-family: monospace; max-height: 200px; overflow-y: auto; }
   </style>
 </head>
-<body>
-
-<h1>Mon Portefeuille Boursier</h1>
-
-<table>
+<body><h1>Mon Portefeuille Boursier (Boosté)</h1><table>
   <thead>
     <tr>
       <th>Entreprise</th>
       <th>Ticker</th>
       <th>Quantité</th>
-      <th>Prix d’achat (€)</th>
+      <th>Prix d’achat</th>
       <th>Cours actuel</th>
-      <th>Valeur actuelle (€)</th>
-      <th>Gain/Perte (€)</th>
-      <th>Performance (%)</th>
+      <th>Valeur actuelle</th>
+      <th>Gain/Perte</th>
+      <th>Performance</th>
       <th>Actions</th>
     </tr>
   </thead>
   <tbody id="portfolio-body"></tbody>
-</table>
-
-<form id="add-stock-form">
+</table><form id="add-stock-form">
   <h2>Ajouter une action</h2>
   <input type="text" id="name" placeholder="Nom" required>
   <input type="text" id="ticker" placeholder="Ticker (ex: AAPL)" required>
+  <select id="exchange">
+    <option value="US">US (NASDAQ/NYSE)</option>
+    <option value="PAR">Euronext Paris</option>
+    <option value="FRA">Xetra/Francfort</option>
+    <option value="LON">Londres</option>
+  </select>
   <input type="number" id="quantity" placeholder="Quantité" step="0.01" required>
-  <input type="number" id="avgPrice" placeholder="Prix d’achat (€)" step="0.01" required>
+  <input type="number" id="avgPrice" placeholder="Prix d’achat" step="0.01" required>
   <button type="submit">Ajouter</button>
-</form>
-
-<h2>Console (logs)</h2>
-<div id="logs">Logs ici :</div>
-
-<script>
+</form><h2>Console (logs)</h2>
+<div id="logs">Logs ici :</div><script>
   const apiKey = "d08jvjhr01qju5m6vpd0d08jvjhr01qju5m6vpdg";
   const tableBody = document.getElementById("portfolio-body");
   const form = document.getElementById("add-stock-form");
@@ -67,18 +61,22 @@
     log("Portefeuille sauvegardé.");
   }
 
-  async function fetchStockPrice(ticker) {
-    const url = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`;
-    log("Appel API : " + url);
+  async function fetchStockPrice(ticker, exchange) {
+    let quoteURL = `https://finnhub.io/api/v1/quote?symbol=${ticker}&token=${apiKey}`;
+    log("Appel API : " + quoteURL);
     try {
-      const res = await fetch(url);
+      const res = await fetch(quoteURL);
       const data = await res.json();
       if (data && data.c) {
-        const price = parseFloat(data.c);
-        log(`Prix reçu pour ${ticker} : ${price}`);
-        return price;
+        log(`Prix pour ${ticker} : ${data.c}`);
+        return parseFloat(data.c);
       } else {
-        throw new Error("Réponse invalide");
+        log(`Quote invalide pour ${ticker}, tentative de recherche...");
+        const symbols = await fetch(`https://finnhub.io/api/v1/stock/symbol?exchange=${exchange}&token=${apiKey}`).then(r => r.json());
+        const found = symbols.find(sym => sym.symbol === ticker);
+        if (found) log(`Symbole vérifié dans ${exchange} : ${found.description}`);
+        else log(`Ticker ${ticker} introuvable dans ${exchange}`);
+        return null;
       }
     } catch (err) {
       log("Erreur API pour " + ticker + ": " + err.message);
@@ -90,7 +88,7 @@
     tableBody.innerHTML = "";
     for (let i = 0; i < portfolio.length; i++) {
       const stock = portfolio[i];
-      const currentPrice = await fetchStockPrice(stock.ticker);
+      const currentPrice = await fetchStockPrice(stock.ticker, stock.exchange);
       if (!currentPrice) continue;
 
       const valueNow = currentPrice * stock.quantity;
@@ -103,10 +101,10 @@
         <td>${stock.name}</td>
         <td>${stock.ticker}</td>
         <td>${stock.quantity}</td>
-        <td>${stock.avgPrice.toFixed(2)}</td>
-        <td>${currentPrice.toFixed(2)}</td>
-        <td>${valueNow.toFixed(2)}</td>
-        <td class="${gain >= 0 ? 'gain' : 'perte'}">${gain.toFixed(2)}</td>
+        <td>${stock.avgPrice.toFixed(2)} €</td>
+        <td>${currentPrice.toFixed(2)} €</td>
+        <td>${valueNow.toFixed(2)} €</td>
+        <td class="${gain >= 0 ? 'gain' : 'perte'}">${gain.toFixed(2)} €</td>
         <td class="${perf >= 0 ? 'gain' : 'perte'}">${perf.toFixed(2)}%</td>
         <td><button onclick="deleteStock(${i})">Supprimer</button></td>
       `;
@@ -128,9 +126,10 @@
     const ticker = document.getElementById("ticker").value.toUpperCase();
     const quantity = parseFloat(document.getElementById("quantity").value);
     const avgPrice = parseFloat(document.getElementById("avgPrice").value);
+    const exchange = document.getElementById("exchange").value;
 
-    log(`Ajouté : ${name} | ${ticker} | ${quantity} actions à ${avgPrice}€`);
-    portfolio.push({ name, ticker, quantity, avgPrice });
+    log(`Ajouté : ${name} | ${ticker} | ${quantity} actions à ${avgPrice}€ (${exchange})`);
+    portfolio.push({ name, ticker, quantity, avgPrice, exchange });
     savePortfolio();
     renderPortfolio();
     form.reset();
@@ -139,7 +138,5 @@
   let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
   log("Portefeuille chargé : " + JSON.stringify(portfolio));
   renderPortfolio();
-</script>
-
-</body>
+</script></body>
 </html>
