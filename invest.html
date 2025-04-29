@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mon Portefeuille Boursier</title>
+  <title>Mon Portefeuille Boursier (avec logs)</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -14,6 +14,7 @@
     input { padding: 5px; margin-right: 10px; }
     button { padding: 5px 10px; }
     form { margin-top: 30px; }
+    #logs { background: #222; color: #0f0; padding: 10px; margin-top: 30px; font-family: monospace; max-height: 200px; overflow-y: auto; }
   </style>
 </head>
 <body>
@@ -35,39 +36,55 @@
     </tr>
   </thead>
   <tbody id="portfolio-body">
-    <!-- Les lignes se remplissent automatiquement -->
+    <!-- Remplissage auto -->
   </tbody>
 </table>
 
 <form id="add-stock-form">
   <h2>Ajouter une action</h2>
   <input type="text" id="name" placeholder="Nom" required>
-  <input type="text" id="ticker" placeholder="Ticker (ex: EPA:SU)" required>
+  <input type="text" id="ticker" placeholder="Ticker (ex: NASDAQ:AAPL)" required>
   <input type="number" id="quantity" placeholder="Quantité" step="0.01" required>
   <input type="number" id="avgPrice" placeholder="Prix d’achat (€)" step="0.01" required>
   <button type="submit">Ajouter</button>
 </form>
 
+<h2>Console (logs)</h2>
+<div id="logs">Logs ici :</div>
+
 <script>
   const apiKey = "c31f21c961153634e1619cb323c51ee0cd8836f309dcf70ad2ba5d69d6e3c477";
   const tableBody = document.getElementById("portfolio-body");
   const form = document.getElementById("add-stock-form");
+  const logBox = document.getElementById("logs");
+
+  function log(msg) {
+    const time = new Date().toLocaleTimeString();
+    logBox.innerHTML += `<div>[${time}] ${msg}</div>`;
+    logBox.scrollTop = logBox.scrollHeight;
+  }
 
   let portfolio = JSON.parse(localStorage.getItem("portfolio")) || [];
+  log("Portefeuille chargé : " + JSON.stringify(portfolio));
 
   async function fetchStockPrice(ticker) {
     const url = `https://serpapi.com/search.json?engine=google_finance&q=${encodeURIComponent(ticker)}&api_key=${apiKey}`;
-    const res = await fetch(url);
-    const data = await res.json();
+    log("Appel API : " + url);
     try {
-      return parseFloat(data.summary.price.replace(',', ''));
-    } catch {
+      const res = await fetch(url);
+      const data = await res.json();
+      const price = parseFloat(data.summary.price.replace(',', ''));
+      log(`Prix pour ${ticker} : ${price}`);
+      return price;
+    } catch (err) {
+      log("Erreur API pour " + ticker + ": " + err.message);
       return null;
     }
   }
 
   function savePortfolio() {
     localStorage.setItem("portfolio", JSON.stringify(portfolio));
+    log("Portefeuille sauvegardé.");
   }
 
   async function renderPortfolio() {
@@ -75,7 +92,11 @@
     for (let i = 0; i < portfolio.length; i++) {
       const stock = portfolio[i];
       const currentPrice = await fetchStockPrice(stock.ticker);
-      if (!currentPrice) continue;
+      if (!currentPrice) {
+        log(`Cours introuvable pour ${stock.ticker}`);
+        continue;
+      }
+
       const valueNow = currentPrice * stock.quantity;
       const cost = stock.avgPrice * stock.quantity;
       const gain = valueNow - cost;
@@ -95,9 +116,11 @@
       `;
       tableBody.appendChild(row);
     }
+    log("Portefeuille affiché.");
   }
 
   function deleteStock(index) {
+    log("Suppression de l'action à l'index : " + index);
     portfolio.splice(index, 1);
     savePortfolio();
     renderPortfolio();
@@ -110,6 +133,7 @@
     const quantity = parseFloat(document.getElementById("quantity").value);
     const avgPrice = parseFloat(document.getElementById("avgPrice").value);
 
+    log(`Ajout : ${name}, ${ticker}, ${quantity} @ ${avgPrice}€`);
     portfolio.push({ name, ticker, quantity, avgPrice });
     savePortfolio();
     renderPortfolio();
