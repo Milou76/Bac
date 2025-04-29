@@ -147,31 +147,6 @@
       background-color: #bd2130;
     }
     
-    .btn-edit-price {
-      background-color: #17a2b8;
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      margin-left: 5px;
-    }
-    
-    .btn-edit-price:hover {
-      background-color: #138496;
-    }
-    
-    .price-cached {
-      font-style: italic;
-      position: relative;
-    }
-    
-    .price-cached::after {
-      content: "⚡";
-      font-size: 0.7rem;
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      color: #17a2b8;
-    }
-    
     .summary {
       display: flex;
       justify-content: space-between;
@@ -291,25 +266,8 @@
           <input type="number" id="stock-price" min="0.01" step="0.01" required>
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="current-price">Prix Actuel Manuel (€, optionnel)</label>
-          <input type="number" id="current-price" min="0.01" step="0.01" placeholder="Laisser vide pour utiliser l'API">
-        </div>
-      </div>
       <button type="submit">Ajouter au Portefeuille</button>
     </form>
-  </div>
-  
-  <div class="card">
-    <h2>Informations Système</h2>
-    <div>
-      <p><strong>Statut du cache:</strong> <span id="cache-status">Actif</span></p>
-      <p><strong>Dernière mise à jour:</strong> <span id="last-update"></span></p>
-      <p><strong>Requêtes API économisées:</strong> <span id="saved-requests">0</span></p>
-      <button id="refresh-btn">Rafraîchir les prix manuellement</button>
-      <button id="clear-cache-btn">Vider le cache</button>
-    </div>
   </div>
 </div>
 
@@ -336,161 +294,23 @@ function loadPortfolio() {
 // Ta clé API Finnhub
 const apiKey = 'd08jvjhr01qju5m6vpd0d08jvjhr01qju5m6vpdg';
 
-// Structure pour stocker les prix mis en cache
-const priceCache = {};
-
-// Fonction pour obtenir le prix actuel d'une action (avec cache)
+// Fonction pour obtenir le prix actuel d'une action
 async function getStockPrice(symbol) {
-  // Vérifier si nous avons un prix en cache qui est encore valide (moins de 1 minute)
-  const now = Date.now();
-  if (priceCache[symbol] && now - priceCache[symbol].timestamp < 60000) {
-    console.log(`Utilisation du cache pour ${symbol}`);
-    return priceCache[symbol].price;
-  }
-  
-  // Si c'est une action européenne (généralement avec .PA pour Paris)
-  if (symbol.includes('.PA')) {
-    try {
-      // Essayer d'abord avec Finnhub
-      const finnhubPrice = await getFinnhubPrice(symbol);
-      if (finnhubPrice !== null) {
-        // Mettre en cache
-        priceCache[symbol] = {
-          price: finnhubPrice,
-          timestamp: now
-        };
-        return finnhubPrice;
-      }
-      
-      // Si Finnhub échoue, essayer avec Yahoo Finance API
-      const yahooPrice = await getYahooPrice(symbol);
-      if (yahooPrice !== null) {
-        // Mettre en cache
-        priceCache[symbol] = {
-          price: yahooPrice,
-          timestamp: now
-        };
-        return yahooPrice;
-      }
-      
-      // Si tout échoue, demander à l'utilisateur
-      return await askUserForPrice(symbol);
-    } catch (error) {
-      console.error('Erreur lors de la récupération des données pour', symbol, error);
-      return await askUserForPrice(symbol);
-    }
-  } else {
-    // Actions américaines et autres - utiliser Finnhub d'abord
-    try {
-      const finnhubPrice = await getFinnhubPrice(symbol);
-      if (finnhubPrice !== null) {
-        // Mettre en cache
-        priceCache[symbol] = {
-          price: finnhubPrice,
-          timestamp: now
-        };
-        return finnhubPrice;
-      }
-      
-      // Si Finnhub échoue, essayer avec Yahoo
-      const yahooPrice = await getYahooPrice(symbol);
-      if (yahooPrice !== null) {
-        // Mettre en cache
-        priceCache[symbol] = {
-          price: yahooPrice,
-          timestamp: now
-        };
-        return yahooPrice;
-      }
-      
-      return await askUserForPrice(symbol);
-    } catch (error) {
-      console.error('Erreur d\'appel API pour', symbol, error);
-      return await askUserForPrice(symbol);
-    }
-  }
-}
-
-// Fonction pour obtenir le prix via Finnhub
-async function getFinnhubPrice(symbol) {
   const url = `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`;
   try {
     const response = await fetch(url);
     const data = await response.json();
 
     if (data.error || !data.c) {
-      console.error('Erreur Finnhub pour', symbol);
+      console.error('Erreur lors de la récupération des données pour', symbol);
       return null;
     }
 
     return data.c; // Prix actuel de l'action
   } catch (error) {
-    console.error('Erreur d\'appel Finnhub API pour', symbol, error);
+    console.error('Erreur d\'appel API pour', symbol, error);
     return null;
   }
-}
-
-// Fonction pour obtenir le prix via Yahoo Finance API
-async function getYahooPrice(symbol) {
-  // Yahoo Finance API via RapidAPI (solution plus fiable mais nécessite une clé)
-  // Pour l'exemple, nous utilisons une approche alternative
-  
-  // Tenter d'utiliser une API publique gratuite alternative
-  try {
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/'; // Note: nécessite une autorisation
-    const yahooUrl = `${corsProxy}https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
-    
-    const response = await fetch(yahooUrl);
-    const data = await response.json();
-    
-    if (data && data.chart && data.chart.result && data.chart.result[0] && 
-        data.chart.result[0].meta && data.chart.result[0].meta.regularMarketPrice) {
-      return data.chart.result[0].meta.regularMarketPrice;
-    }
-    
-    return null;
-  } catch (error) {
-    console.error('Erreur Yahoo Finance API pour', symbol, error);
-    return null;
-  }
-}
-
-// Fonction pour demander le prix à l'utilisateur
-async function askUserForPrice(symbol) {
-  // Vérifier s'il y a un prix stocké en local
-  const savedPrices = JSON.parse(localStorage.getItem('manualPrices') || '{}');
-  
-  if (savedPrices[symbol]) {
-    const useStoredPrice = confirm(`Utiliser le dernier prix connu pour ${symbol}: ${savedPrices[symbol].price}€ (mis à jour le ${new Date(savedPrices[symbol].timestamp).toLocaleString()})?`);
-    
-    if (useStoredPrice) {
-      return savedPrices[symbol].price;
-    }
-  }
-  
-  const userPrice = prompt(`Impossible d'obtenir le prix actuel pour ${symbol}. Veuillez entrer le prix manuellement en euros:`);
-  
-  if (userPrice === null) {
-    // L'utilisateur a annulé - utiliser le dernier prix connu ou 0
-    return savedPrices[symbol] ? savedPrices[symbol].price : 0;
-  }
-  
-  const price = parseFloat(userPrice.replace(',', '.'));
-  
-  if (isNaN(price)) {
-    alert('Prix invalide. Veuillez entrer un nombre.');
-    return askUserForPrice(symbol); // Réessayer
-  }
-  
-  // Sauvegarder le prix entré manuellement
-  savedPrices[symbol] = {
-    price: price,
-    timestamp: Date.now()
-  };
-  
-  localStorage.setItem('manualPrices', JSON.stringify(savedPrices));
-  
-  return price;
 }
 
 // Fonction pour afficher les données du portefeuille
@@ -507,19 +327,11 @@ async function displayPortfolio() {
   
   let totalValue = 0;
   let totalInvestment = 0;
-  let cachePricesUsed = 0;
 
   // Parcours chaque action du portefeuille
   for (const stock of portfolio) {
-    // Vérifier si nous avons un prix en cache pour calculer les statistiques
-    const hasCache = priceCache[stock.ticker] && 
-                    Date.now() - priceCache[stock.ticker].timestamp < 60000;
-    
-    if (hasCache) {
-      cachePricesUsed++;
-    }
-    
     const price = await getStockPrice(stock.ticker);
+    
     const row = portfolioTable.insertRow();
     
     if (price !== null) {
@@ -533,33 +345,23 @@ async function displayPortfolio() {
       totalValue += totalStockValue;
       totalInvestment += avgPrice * quantity;
 
-      // Ajouter une classe pour les prix provenant du cache
-      const priceSourceClass = hasCache ? 'price-cached' : '';
-      const priceSourceTitle = hasCache ? 'Prix en cache (moins de 1 minute)' : 'Prix actualisé';
-
       row.innerHTML = `
         <td>${stock.name}</td>
         <td>${stock.ticker}</td>
         <td>${quantity}</td>
         <td class="text-right">${avgPrice.toFixed(2)} €</td>
-        <td class="text-right ${priceSourceClass}" title="${priceSourceTitle}">${price.toFixed(2)} €</td>
+        <td class="text-right">${price.toFixed(2)} €</td>
         <td class="text-right">${totalStockValue.toFixed(2)} €</td>
         <td class="text-right ${gain >= 0 ? 'gain-positive' : 'gain-negative'}">${gain.toFixed(2)} €</td>
         <td class="text-right ${variation >= 0 ? 'gain-positive' : 'gain-negative'}">${variation.toFixed(2)}%</td>
-        <td>
-          <button class="btn-delete" data-ticker="${stock.ticker}">Supprimer</button>
-          <button class="btn-edit-price" data-ticker="${stock.ticker}" data-price="${price}">Éditer</button>
-        </td>
+        <td><button class="btn-delete" data-ticker="${stock.ticker}">Supprimer</button></td>
       `;
     } else {
       row.innerHTML = `
         <td>${stock.name}</td>
         <td>${stock.ticker}</td>
         <td colspan="6">Erreur dans la récupération des données.</td>
-        <td>
-          <button class="btn-delete" data-ticker="${stock.ticker}">Supprimer</button>
-          <button class="btn-edit-price" data-ticker="${stock.ticker}">Prix manuel</button>
-        </td>
+        <td><button class="btn-delete" data-ticker="${stock.ticker}">Supprimer</button></td>
       `;
     }
   }
@@ -574,14 +376,10 @@ async function displayPortfolio() {
   document.getElementById('total-performance').textContent = `${totalPerformance.toFixed(2)}%`;
   document.getElementById('total-performance').className = `summary-value ${totalPerformance >= 0 ? 'gain-positive' : 'gain-negative'}`;
   
-  // Mettre à jour le compteur de requêtes économisées
-  savedRequestsCount += cachePricesUsed;
-  updateSystemInfo();
-  
   // Cacher le message de chargement
   loadingElement.style.display = 'none';
   
-  // Ajouter les écouteurs d'événements pour les boutons
+  // Ajouter les écouteurs d'événements pour les boutons de suppression
   const deleteButtons = document.querySelectorAll('.btn-delete');
   deleteButtons.forEach(button => {
     button.addEventListener('click', function() {
@@ -589,49 +387,6 @@ async function displayPortfolio() {
       removeStock(ticker);
     });
   });
-  
-  // Ajouter les écouteurs pour les boutons d'édition de prix
-  const editPriceButtons = document.querySelectorAll('.btn-edit-price');
-  editPriceButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      const ticker = this.getAttribute('data-ticker');
-      const currentPrice = this.getAttribute('data-price');
-      editStockPrice(ticker, currentPrice);
-    });
-  });
-}
-
-// Fonction pour éditer manuellement le prix d'une action
-function editStockPrice(ticker, currentPrice) {
-  const newPrice = prompt(`Entrez un nouveau prix pour ${ticker}:`, currentPrice || '');
-  
-  if (newPrice === null) {
-    return; // L'utilisateur a annulé
-  }
-  
-  const price = parseFloat(newPrice.replace(',', '.'));
-  
-  if (isNaN(price) || price <= 0) {
-    alert('Prix invalide. Veuillez entrer un nombre positif.');
-    return;
-  }
-  
-  // Sauvegarder le prix entré manuellement
-  const savedPrices = JSON.parse(localStorage.getItem('manualPrices') || '{}');
-  savedPrices[ticker] = {
-    price: price,
-    timestamp: Date.now()
-  };
-  localStorage.setItem('manualPrices', JSON.stringify(savedPrices));
-  
-  // Mettre également en cache pour l'usage immédiat
-  priceCache[ticker] = {
-    price: price,
-    timestamp: Date.now()
-  };
-  
-  // Rafraîchir l'affichage
-  displayPortfolio();
 }
 
 // Fonction pour supprimer une action du portefeuille
@@ -642,10 +397,6 @@ function removeStock(ticker) {
   displayPortfolio();
 }
 
-// Variables pour suivre les statistiques
-let savedRequestsCount = 0;
-let lastUpdateTime = new Date();
-
 // Événement pour ajouter une nouvelle action
 document.getElementById('add-stock-form').addEventListener('submit', function(e) {
   e.preventDefault();
@@ -654,9 +405,6 @@ document.getElementById('add-stock-form').addEventListener('submit', function(e)
   const ticker = document.getElementById('stock-ticker').value.trim();
   const quantity = parseFloat(document.getElementById('stock-quantity').value);
   const avgPrice = parseFloat(document.getElementById('stock-price').value);
-  const currentPrice = document.getElementById('current-price').value.trim() 
-    ? parseFloat(document.getElementById('current-price').value) 
-    : null;
   
   if (!name || !ticker || isNaN(quantity) || isNaN(avgPrice) || quantity <= 0 || avgPrice <= 0) {
     alert('Veuillez remplir tous les champs correctement.');
@@ -681,4 +429,27 @@ document.getElementById('add-stock-form').addEventListener('submit', function(e)
       avgPrice: newAvgPrice
     };
   } else {
-    // Sinon, ajouter une nou
+    // Sinon, ajouter une nouvelle action
+    portfolio.push({
+      name,
+      ticker,
+      quantity,
+      avgPrice
+    });
+  }
+  
+  savePortfolio(portfolio);
+  
+  // Réinitialiser le formulaire
+  document.getElementById('add-stock-form').reset();
+  
+  // Rafraîchir l'affichage
+  displayPortfolio();
+});
+
+// Appel de la fonction pour afficher les données dès que le site est chargé
+window.onload = displayPortfolio;
+</script>
+
+</body>
+</html>
