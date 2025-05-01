@@ -6,205 +6,318 @@
   <title>Portefeuille Boursier</title>
   <style>
     :root {
-      --primary-color: #4a6fa5;
-      --secondary-color: #6c90c5;
-      --background-color: #f8f9fa;
-      --text-color: #333;
-      --border-color: #ddd;
-      --success-color: #28a745;
-      --danger-color: #dc3545;
-    }
-    
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      line-height: 1.6;
-      color: var(--text-color);
-      background-color: var(--background-color);
-      margin: 0;
-      padding: 0;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    
-    header {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 20px 0;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    
-    h1, h2 {
-      margin-top: 0;
-      text-align: center;
-    }
-    
-    header h1 {
-      font-size: 2rem;
-      color: white;
-    }
-    
-    .card {
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      padding: 20px;
-      margin-bottom: 30px;
-    }
-    
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    th {
-      background-color: var(--secondary-color);
-      color: white;
-      font-weight: 600;
-    }
-    
-    tr:hover {
-      background-color: rgba(108, 144, 197, 0.1);
-    }
-    
-    .text-right {
-      text-align: right;
-    }
-    
-    .gain-positive {
-      color: var(--success-color);
-      font-weight: 600;
-    }
-    
-    .gain-negative {
-      color: var(--danger-color);
-      font-weight: 600;
-    }
-    
-    .form-group {
-      margin-bottom: 15px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-    
-    input, select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-    
-    .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    
-    .form-row .form-group {
-      flex: 1;
-      min-width: 200px;
-    }
-    
-    button {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 600;
-      transition: background-color 0.3s;
-    }
-    
-    button:hover {
-      background-color: var(--secondary-color);
-    }
-    
-    .btn-delete {
-      background-color: var(--danger-color);
-      padding: 6px 12px;
-      font-size: 0.9rem;
-    }
-    
-    .btn-delete:hover {
-      background-color: #bd2130;
-    }
-    
-    .btn-update-price {
-      background-color: var(--secondary-color);
-      padding: 6px 12px;
-      font-size: 0.9rem;
-      margin-left: 5px;
-    }
-    
-    .btn-update-price:hover {
-      background-color: #5a7eb9;
-    }
-    
-    .summary {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-    
-    .summary-item {
-      flex: 1;
-      min-width: 200px;
-      background-color: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    
-    .summary-item h3 {
-      margin-top: 0;
-      color: var(--primary-color);
-    }
-    
-    .summary-value {
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-    
-    #loading {
-      text-align: center;
-      padding: 20px;
-      display: none;
-    }
-    
-    @media (max-width: 768px) {
-      th, td {
-        padding: 8px 10px;
-      }
-      
-      table {
-        font-size: 0.9rem;
-      }
-      
-      .summary-item {
-        min-width: 100%;
-      }
-    }
+  --primary-color: #4a6fa5;
+  --secondary-color: #6c90c5;
+  --background-color: #f8f9fa;
+  --text-color: #333;
+  --border-color: #ddd;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 15px 0;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 1.8rem;
+  color: white;
+}
+
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 15px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background-color: var(--secondary-color);
+  color: white;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+tr:hover {
+  background-color: rgba(108, 144, 197, 0.1);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.gain-positive {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.gain-negative {
+  color: var(--danger-color);
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.form-row .form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: var(--secondary-color);
+}
+
+.btn-delete {
+  background-color: var(--danger-color);
+  padding: 5px 10px;
+  font-size: 0.8rem;
+}
+
+.btn-delete:hover {
+  background-color: #bd2130;
+}
+
+.btn-update-price {
+  background-color: var(--secondary-color);
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  margin-left: 3px;
+}
+
+.btn-update-price:hover {
+  background-color: #5a7eb9;
+}
+
+.summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.summary-item {
+  flex: 1;
+  min-width: 100px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.summary-item h3 {
+  margin-top: 0;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+}
+
+.summary-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+#loading {
+  text-align: center;
+  padding: 20px;
+  display: none;
+}
+
+/* Styles pour les appareils mobiles, spécifiquement OnePlus 8T */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+  
+  .container {
+    padding: 10px;
+  }
+  
+  .card {
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+  
+  /* Transformer le tableau pour l'affichage mobile */
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  
+  tr {
+    border: 1px solid var(--border-color);
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding: 5px;
+  }
+  
+  td {
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  td:last-child {
+    border-bottom: none;
+  }
+  
+  td:before {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: bold;
+    content: attr(data-label);
+  }
+  
+  /* Labels pour les colonnes en mobile */
+  tr td:nth-of-type(1):before { content: "Action"; }
+  tr td:nth-of-type(2):before { content: "Symbole"; }
+  tr td:nth-of-type(3):before { content: "Quantité"; }
+  tr td:nth-of-type(4):before { content: "Prix d'Achat"; }
+  tr td:nth-of-type(5):before { content: "Prix Actuel"; }
+  tr td:nth-of-type(6):before { content: "Valeur Totale"; }
+  tr td:nth-of-type(7):before { content: "Gain/Perte"; }
+  tr td:nth-of-type(8):before { content: "Variation"; }
+  tr td:nth-of-type(9):before { content: "Action"; }
+  
+  .summary {
+    flex-direction: column;
+  }
+  
+  .summary-item {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .form-row .form-group {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .btn-delete, .btn-update-price {
+    display: inline-block;
+    width: calc(50% - 5px);
+    margin: 5px 0;
+    padding: 8px 0;
+    text-align: center;
+  }
+  
+  .btn-update-price {
+    margin-left: 5px;
+  }
+}
+
+/* Pour les téléphones très petits */
+@media (max-width: 375px) {
+  body {
+    font-size: 14px;
+  }
+  
+  .summary-value {
+    font-size: 1rem;
+  }
+  
+  .card {
+    padding: 8px;
+  }
+}
   </style>
 </head>
 <body>
@@ -264,7 +377,7 @@
         </div>
         <div class="form-group">
           <label for="stock-ticker">Symbole/Ticker</label>
-          <input type="text" id="stock-ticker" required placeholder="ex: AAPL, SU.PA">
+          <input type="text" id="stock-ticker" required placeholder="ex: AAPL, AIR.PA">
         </div>
       </div>
       <div class="form-row">
@@ -283,6 +396,9 @@
 </div>
 
 <script>
+// Configuration du proxy CORS
+const proxy = "https://api.allorigins.win/get?url=";
+
 // Fonction pour sauvegarder le portefeuille dans le localStorage
 function savePortfolio(portfolio) {
   localStorage.setItem('stockPortfolio', JSON.stringify(portfolio));
@@ -296,54 +412,58 @@ function loadPortfolio() {
   } else {
     // Portfolio par défaut si rien n'est sauvegardé
     return [
-      { name: 'Apple', ticker: 'AAPL', quantity: 0.5, avgPrice: 100 },
-      { name: 'Schneider Electric', ticker: 'SU.PA', quantity: 1, avgPrice: 200 }
+      { name: 'Schneider Electric', ticker: 'SU.PA', quantity: 7.3, avgPrice: 199 },
+      { name: 'Apple', ticker: 'AAPL', quantity: 0.5, avgPrice: 200},
+      { name: 'Airbus', ticker: 'AIR.PA', quantity: 1, avgPrice: 138 },
+      { name: 'IRWD', ticker: 'IRWD', quantity: 73, avgPrice: 0.54 }
     ];
   }
 }
 
-// Ta clé API Finnhub
-const apiKey = 'd08jvjhr01qju5m6vpd0d08jvjhr01qju5m6vpdg';
-
-// Fonction pour convertir le symbole si nécessaire
-function formatSymbol(symbol) {
-  // Vérifier si c'est un symbole Euronext (ex: SU.PA)
-  if (symbol.includes('.PA')) {
-    // Pour Finnhub, les actions Euronext Paris utilisent parfois ce format
-    return symbol;
-  }
-  return symbol;
-}
-
-// Fonction pour obtenir le prix actuel d'une action
+// Fonction pour obtenir le prix actuel d'une action via Yahoo Finance
 async function getStockPrice(symbol) {
-  const formattedSymbol = formatSymbol(symbol);
-  const url = `https://finnhub.io/api/v1/quote?symbol=${formattedSymbol}&token=${apiKey}`;
-  
   try {
-    const response = await fetch(url);
+    const url = `https://query1.finance.yahoo.com/v7/finance/chart/${symbol}?range=1d&interval=1m`;
+    const response = await fetch(proxy + encodeURIComponent(url));
     const data = await response.json();
-
-    if (data.error || !data.c) {
-      console.error('Erreur lors de la récupération des données pour', symbol);
-      
-      // Tenter avec une API alternative pour les actions Euronext si la première tentative échoue
-      if (symbol.includes('.PA')) {
-        return await getFallbackStockPrice(symbol);
-      }
+    
+    // Vérifier si nous avons des données valides
+    if (!data || !data.contents) {
+      console.error('Pas de données reçues pour', symbol);
       return null;
     }
-
-    return data.c; // Prix actuel de l'action
-  } catch (error) {
-    console.error('Erreur d\'appel API pour', symbol, error);
     
-    // Nous gérons maintenant la saisie manuelle du prix dans la fonction displayPortfolio
+    const parsedData = JSON.parse(data.contents);
+    
+    // Vérifier si les données contiennent les résultats attendus
+    if (!parsedData.chart || !parsedData.chart.result || parsedData.chart.result.length === 0) {
+      console.error('Format de données invalide pour', symbol);
+      return null;
+    }
+    
+    const result = parsedData.chart.result[0];
+    const prices = result.indicators.quote[0].close;
+    
+    // Récupérer le dernier prix valide (non null)
+    let lastValidPrice = null;
+    for (let i = prices.length - 1; i >= 0; i--) {
+      if (prices[i] !== null && prices[i] !== undefined) {
+        lastValidPrice = prices[i];
+        break;
+      }
+    }
+    
+    if (lastValidPrice === null) {
+      console.error('Aucun prix valide trouvé pour', symbol);
+      return null;
+    }
+    
+    return lastValidPrice;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données pour', symbol, error);
     return null;
   }
 }
-
-// La fonction getFallbackStockPrice a été intégrée directement dans displayPortfolio
 
 // Fonction pour afficher les données du portefeuille
 async function displayPortfolio() {
@@ -550,8 +670,19 @@ document.getElementById('add-stock-form').addEventListener('submit', function(e)
   displayPortfolio();
 });
 
+// Fonction pour actualiser automatiquement les données toutes les 5 minutes (300000 ms)
+function startAutoRefresh() {
+  setInterval(() => {
+    console.log("Actualisation automatique des données...");
+    displayPortfolio();
+  }, 300000);
+}
+
 // Appel de la fonction pour afficher les données dès que le site est chargé
-window.onload = displayPortfolio;
+window.onload = function() {
+  displayPortfolio();
+  startAutoRefresh();
+};
 </script>
 
 </body>
