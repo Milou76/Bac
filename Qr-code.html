@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur QR Code Avancé</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .control-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .control-group h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .color-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-input input[type="color"] {
+            width: 50px;
+            height: 40px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .range-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .range-input input[type="range"] {
+            flex: 1;
+        }
+
+        .range-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .logo-upload {
+            position: relative;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logo-upload:hover {
+            border-color: #495057;
+            background-color: #f8f9fa;
+        }
+
+        .logo-upload input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .logo-preview {
+            max-width: 100px;
+            max-height: 100px;
+            margin: 10px auto;
+            display: block;
+            border-radius: 6px;
+        }
+
+        .qr-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #qrCanvas {
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .saved-qr {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .saved-qr h3 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+
+        .saved-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .saved-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+        }
+
+        .saved-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .saved-info strong {
+            display: block;
+            color: #495057;
+        }
+
+        .saved-info small {
+            color: #6c757d;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .advanced-options {
+            display: none;
+        }
+
+        .advanced-options.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Générateur QR Code Avancé</h1>
+            <p>Créez des QR codes personnalisés avec logo et couleurs</p>
+        </div>
+
+        <div class="main-content">
+            <div class="controls">
+                <!-- Contenu de base -->
+                <div class="control-group">
+                    <h3>🔗 Contenu</h3>
+                    <div class="form-group">
+                        <label for="qrText">URL ou Texte :</label>
+                        <textarea id="qrText" rows="3" placeholder="https://example.com ou votre texte"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="qrSize">Taille du QR Code :</label>
+                        <div class="range-input">
+                            <input type="range" id="qrSize" min="200" max="800" value="300">
+                            <span class="range-value" id="sizeValue">300px</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Couleurs -->
+                <div class="control-group">
+                    <h3>🎨 Couleurs</h3>
+                    <div class="color-inputs">
+                        <div class="color-input">
+                            <input type="color" id="foregroundColor" value="#000000">
+                            <label for="foregroundColor">Avant-plan</label>
+                        </div>
+                        <div class="color-input">
+                            <input type="color" id="backgroundColor" value="#ffffff">
+                            <label for="backgroundColor">Arrière-plan</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logo -->
+                <div class="control-group">
+                    <h3>🖼️ Logo</h3>
+                    <div class="form-group">
+                        <div class="logo-upload">
+                            <input type="file" id="logoFile" accept="image/*">
+                            <p>📁 Cliquez pour ajouter un logo</p>
+                            <img id="logoPreview" class="logo-preview" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="logoSize">Taille du logo :</label>
+                        <div class="range-input">
+                            <input type="range" id="logoSize" min="20" max="100" value="60">
+                            <span class="range-value" id="logoSizeValue">60px</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Options avancées -->
+                <div class="control-group">
+                    <h3>⚙️ Options Avancées</h3>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showAdvanced">
+                        <label for="showAdvanced">Afficher les options avancées</label>
+                    </div>
+                    
+                    <div class="advanced-options" id="advancedOptions">
+                        <div class="form-group">
+                            <label for="errorLevel">Niveau de correction d'erreur :</label>
+                            <select id="errorLevel">
+                                <option value="L">Bas (7%)</option>
+                                <option value="M" selected>Moyen (15%)</option>
+                                <option value="Q">Élevé (25%)</option>
+                                <option value="H">Très élevé (30%)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="margin">Marge :</label>
+                            <div class="range-input">
+                                <input type="range" id="margin" min="0" max="10" value="4">
+                                <span class="range-value" id="marginValue">4</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="qrName">Nom du QR Code :</label>
+                            <input type="text" id="qrName" placeholder="Mon QR Code">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="generateQR()">
+                        ✨ Générer QR Code
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearForm()">
+                        🗑️ Effacer
+                    </button>
+                </div>
+            </div>
+
+            <div class="qr-display">
+                <div class="qr-container">
+                    <canvas id="qrCanvas"></canvas>
+                    <div class="buttons">
+                        <button class="btn btn-success" onclick="downloadQR()" id="downloadBtn" style="display: none;">
+                            💾 Télécharger PNG
+                        </button>
+                        <button class="btn btn-success" onclick="downloadSVG()" id="downloadSvgBtn" style="display: none;">
+                            📄 Télécharger SVG
+                        </button>
+                        <button class="btn btn-primary" onclick="saveQR()" id="saveBtn" style="display: none;">
+                            💾 Sauvegarder
+                        </button>
+                    </div>
+                </div>
+
+                <div class="saved-qr" id="savedQRs">
+                    <h3>📚 QR Codes Sauvegardés</h3>
+                    <div id="savedList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQR = null;
+        let logoImage = null;
+        let savedQRs = [];
+
+        // Mise à jour des valeurs en temps réel
+        document.getElementById('qrSize').addEventListener('input', function() {
+            document.getElementById('sizeValue').textContent = this.value + 'px';
+        });
+
+        document.getElementById('logoSize').addEventListener('input', function() {
+            document.getElementById('logoSizeValue').textContent = this.value + 'px';
+        });
+
+        document.getElementById('margin').addEventListener('input', function() {
+            document.getElementById('marginValue').textContent = this.value;
+        });
+
+        // Gestion des options avancées
+        document.getElementById('showAdvanced').addEventListener('change', function() {
+            const advancedOptions = document.getElementById('advancedOptions');
+            if (this.checked) {
+                advancedOptions.classList.add('show');
+            } else {
+                advancedOptions.classList.remove('show');
+            }
+        });
+
+        // Gestion du logo
+        document.getElementById('logoFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        logoImage = img;
+                        const preview = document.getElementById('logoPreview');
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Génération automatique quand on tape
+        document.getElementById('qrText').addEventListener('input', debounce(generateQR, 500));
+        document.getElementById('foregroundColor').addEventListener('change', generateQR);
+        document.getElementById('backgroundColor').addEventListener('change', generateQR);
+        document.getElementById('qrSize').addEventListener('input', debounce(generateQR, 300));
+        document.getElementById('logoSize').addEventListener('input', debounce(generateQR, 300));
+        document.getElementById('errorLevel').addEventListener('change', generateQR);
+        document.getElementById('margin').addEventListener('input', debounce(generateQR, 300));
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        async function generateQR() {
+            const text = document.getElementById('qrText').value.trim();
+            if (!text) return;
+
+            const canvas = document.getElementById('qrCanvas');
+            const size = parseInt(document.getElementById('qrSize').value);
+            const foregroundColor = document.getElementById('foregroundColor').value;
+            const backgroundColor = document.getElementById('backgroundColor').value;
+            const errorLevel = document.getElementById('errorLevel').value;
+            const margin = parseInt(document.getElementById('margin').value);
+
+            try {
+                // Options pour QRCode.js
+                const options = {
+                    width: size,
+                    height: size,
+                    color: {
+                        dark: foregroundColor,
+                        light: backgroundColor
+                    },
+                    errorCorrectionLevel: errorLevel,
+                    margin: margin
+                };
+
+                // Générer le QR code
+                await QRCode.toCanvas(canvas, text, options);
+
+                // Ajouter le logo si présent
+                if (logoImage) {
+                    addLogoToCanvas(canvas);
+                }
+
+                currentQR = {
+                    text: text,
+                    canvas: canvas,
+                    options: options,
+                    timestamp: new Date().toLocaleString()
+                };
+
+                // Afficher les boutons
+                document.getElementById('downloadBtn').style.display = 'inline-flex';
+                document.getElementById('downloadSvgBtn').style.display = 'inline-flex';
+                document.getElementById('saveBtn').style.display = 'inline-flex';
+
+            } catch (error) {
+                console.error('Erreur lors de la génération du QR code:', error);
+                showToast('Erreur lors de la génération du QR code', 'error');
+            }
+        }
+
+        function addLogoToCanvas(canvas) {
+            if (!logoImage) return;
+
+            const ctx = canvas.getContext('2d');
+            const logoSize = parseInt(document.getElementById('logoSize').value);
+            
+            // Calculer la position du logo au centre
+            const x = (canvas.width - logoSize) / 2;
+            const y = (canvas.height - logoSize) / 2;
+
+            // Ajouter un fond blanc autour du logo
+            ctx.save();
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x - 5, y - 5, logoSize + 10, logoSize + 10);
+            
+            // Dessiner le logo
+            ctx.drawImage(logoImage, x, y, logoSize, logoSize);
+            ctx.restore();
+        }
+
+        function downloadQR() {
+            if (!currentQR) return;
+
+            const link = document.createElement('a');
+            link.download = `qr-code-${Date.now()}.png`;
+            link.href = currentQR.canvas.toDataURL();
+            link.click();
+            showToast('QR Code téléchargé avec succès!');
+        }
+
+        async function downloadSVG() {
+            if (!currentQR) return;
+
+            try {
+                const svg = await QRCode.toString(currentQR.text, {
+                    ...currentQR.options,
+                    type: 'svg'
+                });
+
+                const blob = new Blob([svg], { type: 'image/svg+xml' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `qr-code-${Date.now()}.svg`;
+                link.click();
+                URL.revokeObjectURL(url);
+                showToast('QR Code SVG téléchargé avec succès!');
+            } catch (error) {
+                console.error('Erreur lors du téléchargement SVG:', error);
+                showToast('Erreur lors du téléchargement SVG', 'error');
+            }
+        }
+
+        function saveQR() {
+            if (!currentQR) return;
+
+            const name = document.getElementById('qrName').value || `QR Code ${savedQRs.length + 1}`;
+            
+            const qrData = {
+                id: Date.now(),
+                name: name,
+                text: currentQR.text,
+                dataUrl: currentQR.canvas.toDataURL(),
+                timestamp: currentQR.timestamp,
+                options: currentQR.options
+            };
+
+            savedQRs.push(qrData);
+            updateSavedList();
+            showToast('QR Code sauvegardé!');
+        }
+
+        function updateSavedList() {
+            const savedList = document.getElementById('savedList');
+            savedList.innerHTML = '';
+
+            if (savedQRs.length === 0) {
+                savedList.innerHTML = '<p style="color: #6c757d; font-style: italic;">Aucun QR code sauvegardé</p>';
+                return;
+            }
+
+            savedQRs.forEach(qr => {
+                const item = document.createElement('div');
+                item.className = 'saved-item';
+                item.innerHTML = `
+                    <img src="${qr.dataUrl}" class="saved-preview" alt="QR Preview">
+                    <div class="saved-info">
+                        <strong>${qr.name}</strong>
+                        <small>${qr.text.substring(0, 50)}${qr.text.length > 50 ? '...' : ''}</small>
+                        <br><small>Créé le ${qr.timestamp}</small>
+                    </div>
+                    <div class="buttons">
+                        <button class="btn btn-secondary" onclick="loadQR(${qr.id})" style="padding: 5px 10px; font-size: 12px;">
+                            🔄 Charger
+                        </button>
+                        <button class="btn btn-success" onclick="downloadSavedQR(${qr.id})" style="padding: 5px 10px; font-size: 12px;">
+                            💾 DL
+                        </button>
+                        <button class="btn" onclick="deleteSavedQR(${qr.id})" style="padding: 5px 10px; font-size: 12px; background: #dc3545; color: white;">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                savedList.appendChild(item);
+            });
+        }
+
+        function loadQR(id) {
+            const qr = savedQRs.find(q => q.id === id);
+            if (!qr) return;
+
+            document.getElementById('qrText').value = qr.text;
+            document.getElementById('qrName').value = qr.name;
+            
+            if (qr.options) {
+                document.getElementById('foregroundColor').value = qr.options.color.dark;
+                document.getElementById('backgroundColor').value = qr.options.color.light;
+                document.getElementById('qrSize').value = qr.options.width;
+                document.getElementById('sizeValue').textContent = qr.options.width + 'px';
+            }
+
+            generateQR();
+            showToast('QR Code chargé!');
+        }
+
+        function downloadSavedQR(id) {
+            const qr = savedQRs.find(q => q.id === id);
+            if (!qr) return;
+
+            const link = document.createElement('a');
+            link.download = `${qr.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+            link.href = qr.dataUrl;
+            link.click();
+            showToast('QR Code téléchargé!');
+        }
+
+      
+        function deleteSavedQR(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce QR code ?')) {
+                savedQRs = savedQRs.filter(q => q.id !== id);
+                updateSavedList();
+                showToast('QR Code supprimé!');
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('qrText').value = '';
+            document.getElementById('qrName').value = '';
+            document.getElementById('foregroundColor').value = '#000000';
+            document.getElementById('backgroundColor').value = '#ffffff';
+            document.getElementById('qrSize').value = '300';
+            document.getElementById('sizeValue').textContent = '300px';
+            document.getElementById('logoSize').value = '60';
+            document.getElementById('logoSizeValue').textContent = '60px';
+            document.getElementById('margin').value = '4';
+            document.getElementById('marginValue').textContent = '4';
+            document.getElementById('errorLevel').value = 'M';
+            document.getElementById('logoFile').value = '';
+            document.getElementById('logoPreview').style.display = 'none';
+            
+            logoImage = null;
+            currentQR = null;
+            
+            const canvas = document.getElementById('qrCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            document.getElementById('downloadBtn').style.display = 'none';
+            document.getElementById('downloadSvgBtn').style.display = 'none';
+            document.getElementById('saveBtn').style.display = 'none';
+            
+            showToast('Formulaire effacé!');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            
+            if (type === 'error') {
+                toast.style.background = '#dc3545';
+            }
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialisation
+        updateSavedList();
+        
+        // Générer un QR code d'exemple au chargement
+        document.getElementById('qrText').value = 'https://www.example.com';
+        generateQR();
+    </script>
+</body>
+</html>
