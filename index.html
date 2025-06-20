@@ -259,9 +259,8 @@
             </div>
             <div class="date-info" id="pcm-date">Date: 17 juin 2025</div>
         </div>
-    </div>
-
-    <div class="countdown-card">
+        
+        <div class="countdown-card">
             <div class="countdown-title">Grand oral</div>
             <div class="countdown-time" id="GC-countdown">
                 <div class="time-unit">
@@ -269,7 +268,7 @@
                     <div class="time-label">Jours</div>
                 </div>
                 <div class="time-unit">
-                    <div class="time-value" id="pcm-hours">0</div>
+                    <div class="time-value" id="GC-hours">0</div>
                     <div class="time-label">Heures</div>
                 </div>
                 <div class="time-unit">
@@ -281,7 +280,7 @@
                     <div class="time-label">Sec</div>
                 </div>
             </div>
-            <div class="date-info" id="pcm-date">Date: 23 juin 2025</div>
+            <div class="date-info" id="GC-date">Date: 23 juin 2025</div>
         </div>
     </div>
 
@@ -312,6 +311,7 @@ const GCExamDate = new Date('2025-06-23T08:13:30'); // Épreuve de Grand oral (2
         document.getElementById('philo-date').textContent = 'Date: ' + formatDate(philoExamDate);
         document.getElementById('i2d-date').textContent = 'Date: ' + formatDate(i2dExamDate);
         document.getElementById('pcm-date').textContent = 'Date: ' + formatDate(pcmExamDate);
+        document.getElementById('GC-date').textContent = 'Date: ' + formatDate(GCExamDate);
         
         // Fonction pour formater une date
         function formatDate(date) {
