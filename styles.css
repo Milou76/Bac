@@ -1,0 +1,301 @@
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('image.JPG'); /* Image de fond */
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+            color: white; /* Couleur de texte blanche pour contraste */
+        }
+        #loginContainer {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+            margin: auto;
+            background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
+            padding: 20px;
+            border-radius: 10px;
+        }
+        #calendarContainer {
+            display: none;
+            margin-top: 20px;
+            background-color: rgba(0, 0, 0, 0.7); /* Fond semi-transparent */
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .week {
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            position: relative; /* Nécessaire pour le positionnement absolu de .locataire-name */
+            padding-right: 50px; /* Laisse un peu d’espace à droite si besoin */
+        }
+        .week.disponible {
+            background-color: #00ff0080; /* Couleur pour les semaines disponibles */
+        }
+        .quasi-louee{
+            background-color: #ff7300a1; /* Couleur pour les semaines louées */
+        }
+        /* Couleurs des boutons */
+        .week.louee {
+            background-color: #ff000080; /* Couleur pour les semaines louées */
+        }
+
+
+        /* Modale */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7); /* Arrière-plan semi-transparent */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        #modalContent {
+            background: white;
+            color: black;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+            max-height: 90vh; /* Empêche la modale de dépasser l'écran */
+            overflow-y: auto; /* Active le scroll à l'intérieur si besoin */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s;
+        }
+        
+        /* Modale principale */
+        #modalajout {
+            display: none; /* Cachée par défaut */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: rgba(0, 0, 0, 0.4); /* Fond assombri */
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+
+        /* Contenu de la modale */
+        #modalContentajout {
+            background: white;
+            color: black;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 80vh;
+            overflow-y: auto; /* Ajoute un scroll si nécessaire */
+        }
+
+        /* Animation d’apparition de la modale */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Groupes pour aligner label + input sur la même ligne */
+        .form-group {
+            display: flex;
+            flex-wrap: wrap; /* Si nécessaire, passe à la ligne */
+            justify-content: space-between;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .form-group label {
+            flex: 1;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            flex: 2;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        /* Styles pour les boutons */
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Boutons spécifiques */
+        #save-locataire {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #close-modalajout {
+            background-color: #dc3545;
+            color: white;
+        }
+#close-modal {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        #close-modal:hover {
+            background-color: #545b62;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+
+        /* Ajustements pour les écrans plus petits */
+        @media (max-width: 768px) {
+        #modalajout {
+                width: 95%;
+            }
+        #modalContentajout {
+                padding: 15px;
+            }
+        .form-group {
+                flex-direction: column; /* Empiler les éléments sur petits écrans */
+            }
+        button {
+                margin-top: 10px;
+            }
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #summary {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            z-index: 1000;
+        }
+
+         /* Style des flèches */
+         .arrow-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .arrow {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 10px;
+            margin: 0 10px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .arrow:hover {
+            background-color: #dcdcdc;
+        }
+
+        .date-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .date-info span {
+            margin: 0 10px;
+        }
+
+        .nextTabBtn, .prevTabBtn {
+            display: none; /* Caché par défaut */
+            position: fixed; /* Fixé en bas de la page */
+            bottom: 20px; /* Distance depuis le bas */
+            background-color: #007bff; /* Bleu vif */
+            color: white; /* Texte blanc */
+            padding: 15px 20px; /* Agrandir un peu */
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px; /* Boutons arrondis */
+            cursor: pointer;
+            z-index: 1000; /* Toujours visible */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Petit effet d'ombre */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        /* Positionnement des boutons */
+        .btnprev {
+            left: 10%; /* Aligné à gauche */
+        }
+        
+        .btnnext {
+            right: 10%; /* Aligné à droite */
+        }
+        
+        /* Effet au survol */
+        .btnnext:hover, .btnprev:hover {
+            background-color: #0056b3; /* Bleu plus foncé */
+            transform: scale(1.1); /* Légère augmentation de taille */
+        }
+        
+        /* Afficher les boutons uniquement après connexion */
+        #calendarContainer.active .btnnext,
+        #calendarContainer.active .btnprev {
+            display: block; 
+        }
+        .locataire-container {
+            display: flex;  /* Aligner texte + pastille sur la même ligne */
+            align-items: center;  /* Centrage vertical */
+            justify-content: flex-end;  /* Aligner à droite */
+            gap: 5px;  /* Espacement entre texte et pastille */
+            width: 100%; /* Pour occuper toute la largeur dispo */
+        }
+        
+        .locataire-name {
+            font-size: 15px;
+            color: black;
+            font-weight: bold;
+
+        }
+        
+        .pastille {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
