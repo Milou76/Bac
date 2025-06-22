@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Image LocalStorage</title>
+  <title>Galerie LocalStorage</title>
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
@@ -12,65 +12,67 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      align-items: center;
       min-height: 100vh;
+      align-items: center;
     }
 
     header {
       background-color: #2c3e50;
       color: white;
       padding: 1rem;
-      width: 100%;
       text-align: center;
+      width: 100%;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     main {
+      max-width: 900px;
+      width: 95%;
       margin-top: 2rem;
-      background: white;
       padding: 2rem;
+      background: white;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     input[type="file"] {
       margin-bottom: 1rem;
     }
 
-    button {
-      background-color: #3498db;
-      color: white;
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+
+    .image-card {
+      position: relative;
+      width: 200px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      background: #fff;
+    }
+
+    .image-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .image-card button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: rgba(231, 76, 60, 0.9);
       border: none;
-      padding: 0.7rem 1.2rem;
-      margin: 0.5rem;
+      color: white;
+      padding: 5px 10px;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #2980b9;
-    }
-
-    img {
-      max-width: 100%;
-      margin-top: 1rem;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      display: none;
-    }
-
-    .base64-output {
-      margin-top: 1rem;
-      word-break: break-all;
       font-size: 0.8rem;
-      background: #f0f0f0;
-      padding: 0.5rem;
-      border-radius: 5px;
-      display: none;
     }
 
     footer {
@@ -83,81 +85,76 @@
 </head>
 <body>
   <header>
-    <h1>Image en LocalStorage</h1>
+    <h1>Galerie d’Images (LocalStorage)</h1>
   </header>
 
   <main>
-    <input type="file" id="imageInput" accept="image/*" />
-    <br />
-    <button id="toggleBtn">Afficher l’image</button>
-    <img id="preview" src="" alt="Aperçu" />
-    <div class="base64-output" id="base64Display"></div>
+    <input type="file" id="imageInput" accept="image/*" multiple />
+    <div class="gallery" id="gallery"></div>
   </main>
 
   <footer>
-    © 2025 - Stockage Local par Emilien
+    © 2025 - Galerie LocalStorage par Emilien
   </footer>
 
   <script>
     const input = document.getElementById("imageInput");
-    const preview = document.getElementById("preview");
-    const base64Display = document.getElementById("base64Display");
-    const toggleBtn = document.getElementById("toggleBtn");
+    const gallery = document.getElementById("gallery");
 
-    let imageVisible = false;
+    // Charger les images depuis localStorage
+    function loadImages() {
+      gallery.innerHTML = "";
+      const images = JSON.parse(localStorage.getItem("galleryImages") || "[]");
 
-    // Upload et stockage
-    input.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+      images.forEach((base64, index) => {
+        const div = document.createElement("div");
+        div.className = "image-card";
 
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        const base64 = event.target.result;
-        localStorage.setItem("storedImageBase64", base64);
-        preview.src = base64;
-        preview.style.display = "block";
-        base64Display.textContent = base64;
-        base64Display.style.display = "block";
-        toggleBtn.textContent = "Cacher l’image";
-        imageVisible = true;
-      };
-      reader.readAsDataURL(file);
-    });
+        const img = document.createElement("img");
+        img.src = base64;
 
-    // Bouton afficher / cacher
-    toggleBtn.addEventListener("click", () => {
-      const stored = localStorage.getItem("storedImageBase64");
-      if (!stored) {
-        alert("Aucune image en mémoire !");
-        return;
-      }
+        const btn = document.createElement("button");
+        btn.textContent = "Supprimer";
+        btn.onclick = () => {
+          if (confirm("Tu es sûr de vouloir supprimer cette image ?")) {
+            images.splice(index, 1);
+            localStorage.setItem("galleryImages", JSON.stringify(images));
+            loadImages();
+          }
+        };
 
-      if (imageVisible) {
-        preview.style.display = "none";
-        base64Display.style.display = "none";
-        toggleBtn.textContent = "Afficher l’image";
-        imageVisible = false;
-      } else {
-        preview.src = stored;
-        preview.style.display = "block";
-        base64Display.textContent = stored;
-        base64Display.style.display = "block";
-        toggleBtn.textContent = "Cacher l’image";
-        imageVisible = true;
-      }
-    });
-
-    // Recharge à l'ouverture
-    const storedImage = localStorage.getItem("storedImageBase64");
-    if (storedImage) {
-      preview.src = storedImage;
-      imageVisible = true;
-      preview.style.display = "block";
-      base64Display.textContent = storedImage;
-      base64Display.style.display = "block";
-      toggleBtn.textContent = "Cacher l’image";
+        div.appendChild(img);
+        div.appendChild(btn);
+        gallery.appendChild(div);
+      });
     }
+
+    // Ajouter images
+    input.addEventListener("change", (e) => {
+      const files = Array.from(e.target.files);
+      const reader = new FileReader();
+      const images = JSON.parse(localStorage.getItem("galleryImages") || "[]");
+
+      function readNext(index) {
+        if (index >= files.length) {
+          localStorage.setItem("galleryImages", JSON.stringify(images));
+          loadImages();
+          return;
+        }
+
+        const file = files[index];
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          images.push(event.target.result);
+          readNext(index + 1);
+        };
+        reader.readAsDataURL(file);
+      }
+
+      readNext(0);
+    });
+
+    loadImages();
   </script>
 </body>
 </html>
