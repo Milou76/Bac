@@ -89,8 +89,7 @@
   <main>
     <input type="file" id="imageInput" accept="image/*" />
     <br />
-    <button id="showBtn">Afficher l’image</button>
-    <button id="removeBtn">Supprimer l’image</button>
+    <button id="toggleBtn">Afficher l’image</button>
     <img id="preview" src="" alt="Aperçu" />
     <div class="base64-output" id="base64Display"></div>
   </main>
@@ -103,10 +102,11 @@
     const input = document.getElementById("imageInput");
     const preview = document.getElementById("preview");
     const base64Display = document.getElementById("base64Display");
-    const showBtn = document.getElementById("showBtn");
-    const removeBtn = document.getElementById("removeBtn");
+    const toggleBtn = document.getElementById("toggleBtn");
 
-    // Upload image
+    let imageVisible = false;
+
+    // Upload et stockage
     input.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -119,31 +119,45 @@
         preview.style.display = "block";
         base64Display.textContent = base64;
         base64Display.style.display = "block";
+        toggleBtn.textContent = "Cacher l’image";
+        imageVisible = true;
       };
       reader.readAsDataURL(file);
     });
 
-    // Bouton Afficher
-    showBtn.addEventListener("click", () => {
+    // Bouton afficher / cacher
+    toggleBtn.addEventListener("click", () => {
       const stored = localStorage.getItem("storedImageBase64");
-      if (stored) {
+      if (!stored) {
+        alert("Aucune image en mémoire !");
+        return;
+      }
+
+      if (imageVisible) {
+        preview.style.display = "none";
+        base64Display.style.display = "none";
+        toggleBtn.textContent = "Afficher l’image";
+        imageVisible = false;
+      } else {
         preview.src = stored;
         preview.style.display = "block";
         base64Display.textContent = stored;
         base64Display.style.display = "block";
-      } else {
-        alert("Aucune image stockée !");
+        toggleBtn.textContent = "Cacher l’image";
+        imageVisible = true;
       }
     });
 
-    // Bouton Supprimer
-    removeBtn.addEventListener("click", () => {
-      localStorage.removeItem("storedImageBase64");
-      preview.src = "";
-      preview.style.display = "none";
-      base64Display.textContent = "";
-      base64Display.style.display = "none";
-    });
+    // Recharge à l'ouverture
+    const storedImage = localStorage.getItem("storedImageBase64");
+    if (storedImage) {
+      preview.src = storedImage;
+      imageVisible = true;
+      preview.style.display = "block";
+      base64Display.textContent = storedImage;
+      base64Display.style.display = "block";
+      toggleBtn.textContent = "Cacher l’image";
+    }
   </script>
 </body>
 </html>
