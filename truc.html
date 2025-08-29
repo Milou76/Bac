@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emploi du Temps - Université de Rouen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header-info {
+            text-align: right;
+            opacity: 0.9;
+        }
+
+        .controls {
+            background: white;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #2c3e50;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: #ecf0f1;
+        }
+
+        .btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .schedule-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .week-header {
+            background: #34495e;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            background: #27ae60;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #229954;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            min-height: 600px;
+        }
+
+        .time-column {
+            background: #ecf0f1;
+            border-right: 1px solid #bdc3c7;
+        }
+
+        .time-slot {
+            height: 60px;
+            border-bottom: 1px solid #bdc3c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #7f8c8d;
+        }
+
+        .day-column {
+            border-right: 1px solid #ecf0f1;
+            position: relative;
+        }
+
+        .day-header {
+            height: 50px;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #2980b9;
+        }
+
+        .day-grid {
+            position: relative;
+            height: calc(100% - 50px);
+        }
+
+        .grid-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ecf0f1;
+        }
+
+        .course {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .course:hover {
+            transform: scale(1.02);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .course-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .course-info {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            line-height: 1.1;
+        }
+
+        .course-location {
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        /* Couleurs des cours selon le type */
+        .course.cm { background: #e74c3c; color: white; }
+        .course.td { background: #f39c12; color: white; }
+        .course.tp { background: #27ae60; color: white; }
+        .course.portfolio { background: #9b59b6; color: white; }
+        .course.default { background: #3498db; color: white; }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #e74c3c;
+            background: #fdf2f2;
+            margin: 20px;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
+        }
+
+        .url-input {
+            background: white;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .url-input label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .url-input input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .url-input button {
+            margin-top: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .url-input button:hover {
+            background: #2980b9;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .connection-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        .connection-status.proxy {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .connection-status.direct {
+            background: #d1edff;
+            color: #0c5460;
+        }
+
+        .connection-status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .schedule-grid {
+                grid-template-columns: 60px repeat(5, 1fr);
+                font-size: 0.8rem;
+            }
+            
+            .time-slot {
+                height: 50px;
+                font-size: 0.7rem;
+            }
+            
+            .day-header {
+                height: 40px;
+                font-size: 0.8rem;
+            }
+            
+            .course {
+                padding: 4px 6px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>📚 Emploi du Temps</h1>
+            <div class="header-info">
+                <div>Université de Rouen</div>
+                <div>BUT Métiers du Multimédia</div>
+                <span id="connectionStatus" class="connection-status" style="display: none;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="url-input">
+        <label for="icalUrl">URL du calendrier iCal :</label>
+        <input type="url" id="icalUrl" placeholder="https://adecampus.univ-rouen.fr/jsp/custom/modules/plannings/anonymous_cal.jsp..." value="https://adecampus.univ-rouen.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=723&projectId=0&calType=ical&nbWeeks=4&displayConfigId=8">
+        <button onclick="loadFromUrl()">Charger l'emploi du temps</button>
+        <p style="font-size: 0.8rem; color: #7f8c8d; margin-top: 5px;">
+            Collez l'URL de votre calendrier iCal pour charger automatiquement votre emploi du temps
+        </p>
+    </div>
+
+    <div class="controls">
+        <button class="btn active" onclick="showWeek(0)">Semaine Actuelle</button>
+        <button class="btn" onclick="showWeek(1)">Semaine +1</button>
+        <button class="btn" onclick="showWeek(2)">Semaine +2</button>
+        <button class="btn" onclick="showWeek(3)">Semaine +3</button>
+    </div>
+
+    <div class="schedule-container">
+        <div class="week-header">
+            <span id="weekTitle">Chargement...</span>
+            <button class="refresh-btn" onclick="refreshSchedule()">🔄 Actualiser</button>
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            Chargement de l'emploi du temps...
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            <h3>Erreur de chargement</h3>
+            <p id="errorMessage"></p>
+            <button onclick="loadFromUrl()" style="margin-top: 10px; background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                Réessayer
+            </button>
+        </div>
+        
+        <div id="scheduleGrid" style="display: none;">
+            <!-- La grille sera générée ici -->
+        </div>
+    </div>
+
+    <script>
+        let events = [];
+        let currentWeekOffset = 0;
+        let timeOffset = 0; // Décalage horaire en heures
+        let isUsingProxy = false;
+
+        // Heures de cours (8h-18h)
+        const timeSlots = [];
+        for (let h = 8; h <= 18; h++) {
+            timeSlots.push(`${h.toString().padStart(2, '0')}:00`);
+        }
+
+        // Jours de la semaine
+        const weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+
+        function updateConnectionStatus(status, usingProxy = false) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.style.display = 'inline-block';
+            
+            if (status === 'success') {
+                if (usingProxy) {
+                    statusElement.textContent = 'Connexion via proxy';
+                    statusElement.className = 'connection-status proxy';
+                } else {
+                    statusElement.textContent = 'Connexion directe';
+                    statusElement.className = 'connection-status direct';
+                }
+            } else if (status === 'error') {
+                statusElement.textContent = 'Erreur de connexion';
+                statusElement.className = 'connection-status error';
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('scheduleGrid').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+            updateConnectionStatus('error');
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('scheduleGrid').style.display = 'none';
+            hideError();
+            document.getElementById('connectionStatus').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('scheduleGrid').style.display = 'block';
+        }
+
+        // Fonction pour parser iCal (version améliorée pour ADE Campus)
+        function parseICalData(icalText) {
+            const events = [];
+            const lines = icalText.split(/\r?\n/).map(line => line.trim());
+            
+            let currentEvent = null;
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                
+                // Gérer les lignes qui continuent (commencent par un espace)
+                while (i + 1 < lines.length && lines[i + 1].match(/^\s/)) {
+                    i++;
+                    line += lines[i].substring(1);
+                }
+                
+                if (line === 'BEGIN:VEVENT') {
+                    currentEvent = {};
+                } else if (line === 'END:VEVENT' && currentEvent) {
+                    if (currentEvent.start && currentEvent.end && currentEvent.title) {
+                        // Nettoyer le titre
+                        currentEvent.title = currentEvent.title
+                            .replace(/\\n/g, ' ')
+                            .replace(/\\,/g, ',')
+                            .replace(/\\;/g, ';')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        
+                        events.push(currentEvent);
+                    }
+                    currentEvent = null;
+                } else if (currentEvent && line.includes(':')) {
+                    const colonIndex = line.indexOf(':');
+                    const key = line.substring(0, colonIndex);
+                    const value = line.substring(colonIndex + 1);
+                    
+                    if (key.startsWith('DTSTART')) {
+                        currentEvent.start = parseICalDate(value);
+                    } else if (key.startsWith('DTEND')) {
+                        currentEvent.end = parseICalDate(value);
+                    } else if (key === 'SUMMARY') {
+                        currentEvent.title = value;
+                    } else if (key === 'LOCATION') {
+                        currentEvent.location = value.replace(/\\n/g, ' ').replace(/\\,/g, ',').replace(/\\;/g, ';');
+                    } else if (key === 'DESCRIPTION') {
+                        const desc = value.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';');
+                        
+                        // Pour ADE Campus, le professeur peut être dans différents formats
+                        const profPatterns = [
+                            /(?:Enseignant|Professeur|Prof)[:\s]*([^\n\r]*)/i,
+                            /^([A-Z]+\s+[A-Z]+(?:\s+[A-Z]+)*)$/m,
+                            /\n([A-Z][A-Z\s]+[A-Z])(?:\n|$)/
+                        ];
+                        
+                        for (const pattern of profPatterns) {
+                            const match = desc.match(pattern);
+                            if (match && match[1]) {
+                                currentEvent.professor = match[1].trim();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return events;
+        }
+
+        function parseICalDate(dateStr) {
+            // Format: 20250901T070000Z, 20250901T070000, ou avec fuseaux horaires
+            let originalDateStr = dateStr;
+            let cleanDate = dateStr;
+            
+            // Gérer les paramètres de fuseau horaire
+            if (cleanDate.includes(';')) {
+                cleanDate = cleanDate.split(';')[0];
+            }
+            
+            // Nettoyer la chaîne
+            cleanDate = cleanDate.replace(/[TZ]/g, '');
+            
+            const year = cleanDate.substr(0, 4);
+            const month = cleanDate.substr(4, 2);
+            const day = cleanDate.substr(6, 2);
+            const hour = cleanDate.substr(8, 2) || '00';
+            const minute = cleanDate.substr(10, 2) || '00';
+            
+            // Créer la date de base
+            let date = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`);
+            
+            // Si la date se termine par Z (UTC), on ajoute 1h ou 2h selon la saison
+            if (originalDateStr.endsWith('Z')) {
+                // Déterminer si on est en heure d'hiver ou d'été
+                const testDate = new Date(date);
+                const jan = new Date(testDate.getFullYear(), 0, 1);
+                const jul = new Date(testDate.getFullYear(), 6, 1);
+                const stdOffset = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+                const isDST = testDate.getTimezoneOffset() < stdOffset;
+                
+                // Ajuster selon l'heure française (UTC+1 en hiver, UTC+2 en été)
+                const offset = isDST ? 2 : 1;
+                date = new Date(date.getTime() + offset * 60 * 60 * 1000);
+            }
+            
+            return date;
+        }
+
+        async function loadFromUrl() {
+            const url = document.getElementById('icalUrl').value.trim();
+            
+            if (!url) {
+                showError('Veuillez saisir une URL valide');
+                return;
+            }
+
+            showLoading();
+            isUsingProxy = false;
+
+            try {
+                let response;
+                let fetchSuccessful = false;
+                
+                // Essayer d'abord directement (silencieux pour éviter les logs d'erreur)
+                try {
+                    response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'text/calendar,text/plain,*/*'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        fetchSuccessful = true;
+                        console.log('✅ Connexion directe réussie');
+                    }
+                } catch (directError) {
+                    // Silencieux - on essaiera le proxy
+                }
+                
+                // Si échec, utiliser le proxy CORS
+                if (!fetchSuccessful) {
+                    console.log('🔄 Utilisation du proxy CORS...');
+                    isUsingProxy = true;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+                    response = await fetch(proxyUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP: ${response.status} - ${response.statusText}`);
+                    }
+                }
+                
+                const icalData = await response.text();
+                
+                if (!icalData.includes('BEGIN:VCALENDAR')) {
+                    throw new Error('Le fichier ne semble pas être un calendrier iCal valide');
+                }
+                
+                events = parseICalData(icalData);
+                console.log(`📅 ${events.length} événements chargés avec succès`);
+                
+                if (events.length === 0) {
+                    showError('Aucun événement trouvé dans le calendrier');
+                    return;
+                }
+                
+                updateConnectionStatus('success', isUsingProxy);
+                hideLoading();
+                showWeek(currentWeekOffset);
+                
+            } catch (error) {
+                console.error('❌ Erreur de chargement:', error.message);
+                showError(`Impossible de charger le calendrier: ${error.message}\n\nVérifiez que l'URL est correcte et accessible.`);
+            }
+        }
+
+        function getWeekStart(weekOffset = 0) {
+            const today = new Date();
+            const day = today.getDay();
+            const diff = today.getDate() - day + (day === 0 ? -6 : 1) + (weekOffset * 7);
+            const weekStart = new Date(today.setDate(diff));
+            weekStart.setHours(0, 0, 0, 0);
+            return weekStart;
+        }
+
+        function getEventsForWeek(weekOffset) {
+            const weekStart = getWeekStart(weekOffset);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            
+            return events.filter(event => {
+                const eventDate = new Date(event.start);
+                return eventDate >= weekStart && eventDate < weekEnd;
+            });
+        }
+
+        function getCourseType(title) {
+            const titleLower = title.toLowerCase();
+            if (titleLower.includes('cm ') || titleLower.startsWith('cm ')) return 'cm';
+            if (titleLower.includes('td ') || titleLower.startsWith('td ')) return 'td';
+            if (titleLower.includes('tp ') || titleLower.startsWith('tp ')) return 'tp';
+            if (titleLower.includes('portfolio')) return 'portfolio';
+            return 'default';
+        }
+
+        function createScheduleGrid(weekOffset) {
+            const weekEvents = getEventsForWeek(weekOffset);
+            const weekStart = getWeekStart(weekOffset);
+            
+            // Titre de la semaine
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            document.getElementById('weekTitle').textContent = 
+                `Semaine du ${weekStart.toLocaleDateString('fr-FR')} au ${weekEnd.toLocaleDateString('fr-FR')}`;
+
+            let html = '<div class="schedule-grid">';
+            
+            // Colonne des heures
+            html += '<div class="time-column">';
+            html += '<div class="time-slot" style="height: 50px;"></div>'; // Header vide
+            timeSlots.forEach(time => {
+                html += `<div class="time-slot">${time}</div>`;
+            });
+            html += '</div>';
+            
+            // Colonnes des jours
+            weekDays.forEach((dayName, dayIndex) => {
+                const dayDate = new Date(weekStart);
+                dayDate.setDate(dayDate.getDate() + dayIndex);
+                
+                const dayEvents = weekEvents.filter(event => {
+                    const eventDate = new Date(event.start);
+                    return eventDate.toDateString() === dayDate.toDateString();
+                });
+                
+                html += '<div class="day-column">';
+                html += `<div class="day-header">${dayName}<br><small>${dayDate.getDate()}/${dayDate.getMonth() + 1}</small></div>`;
+                html += '<div class="day-grid">';
+                
+                // Lignes de grille
+                for (let i = 1; i < timeSlots.length; i++) {
+                    html += `<div class="grid-line" style="top: ${i * 60}px;"></div>`;
+                }
+                
+                // Événements
+                dayEvents.forEach(event => {
+                    const startDate = new Date(event.start.getTime() + timeOffset * 60 * 60 * 1000);
+                    const endDate = new Date(event.end.getTime() + timeOffset * 60 * 60 * 1000);
+                    
+                    const startHour = startDate.getHours();
+                    const startMinute = startDate.getMinutes();
+                    const endHour = endDate.getHours();
+                    const endMinute = endDate.getMinutes();
+                    
+                    // Calculer la position et la hauteur
+                    const startPos = (startHour - 8) * 60 + startMinute;
+                    const duration = (endHour - startHour) * 60 + (endMinute - startMinute);
+                    
+                    if (startPos >= 0 && startPos < 600) { // Entre 8h et 18h
+                        const courseType = getCourseType(event.title);
+                        
+                        html += `
+                            <div class="course ${courseType}" 
+                                 style="top: ${startPos}px; height: ${duration}px;"
+                                 title="${event.title}&#10;${startDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} - ${endDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}&#10;${event.location || ''}${event.professor ? '&#10;' + event.professor : ''}">
+                                <div class="course-title">${event.title}</div>
+                                <div class="course-info">
+                                    ${startDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} - ${endDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
+                                </div>
+                                ${event.location ? `<div class="course-location">${event.location}</div>` : ''}
+                            </div>
+                        `;
+                    }
+                });
+                
+                html += '</div></div>';
+            });
+            
+            html += '</div>';
+            
+            document.getElementById('scheduleGrid').innerHTML = html;
+        }
+
+        function showWeek(weekOffset) {
+            currentWeekOffset = weekOffset;
+            
+            // Mettre à jour les boutons
+            document.querySelectorAll('.btn').forEach((btn, index) => {
+                btn.classList.toggle('active', index === weekOffset);
+            });
+            
+            if (events.length === 0) {
+                document.getElementById('scheduleGrid').innerHTML = '<div class="no-events">Aucun emploi du temps chargé.<br>Veuillez d\'abord saisir une URL iCal valide.</div>';
+                return;
+            }
+            
+            createScheduleGrid(weekOffset);
+        }
+
+        function adjustTime(hours) {
+            timeOffset += hours;
+            if (events.length > 0) {
+                showWeek(currentWeekOffset);
+            }
+        }
+
+        function refreshSchedule() {
+            if (document.getElementById('icalUrl').value.trim()) {
+                loadFromUrl();
+            } else {
+                showError('Aucune URL configurée pour actualiser');
+            }
+        }
+
+        // Initialisation
+        function init() {
+            showWeek(0);
+            
+            // Message de bienvenue dans la console
+            console.log('📚 Emploi du Temps - Université de Rouen');
+            console.log('✨ Version optimisée avec gestion d\'erreurs améliorée');
+        }
+
+        // Démarrer l'application
+        init();
+    </script>
+</body>
+</html>
