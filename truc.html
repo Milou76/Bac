@@ -306,6 +306,36 @@
             color: #721c24;
         }
 
+        .connection-status.firebase {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .user-info {
+            background: white;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .user-email {
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .fallback-input {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 6px;
+            border: 1px solid #ffeaa7;
+        }
+
         @media (max-width: 768px) {
             .schedule-grid {
                 grid-template-columns: 60px repeat(5, 1fr);
@@ -341,13 +371,20 @@
         </div>
     </div>
 
-    <div class="url-input">
-        <label for="icalUrl">URL du calendrier iCal :</label>
-        <input type="url" id="icalUrl" placeholder="https://adecampus.univ-rouen.fr/jsp/custom/modules/plannings/anonymous_cal.jsp..." value="https://adecampus.univ-rouen.fr/jsp/custom/modules/plannings/anonymous_cal.jsp?resources=723&projectId=0&calType=ical&nbWeeks=4&displayConfigId=8">
-        <button onclick="loadFromUrl()">Charger l'emploi du temps</button>
-        <p style="font-size: 0.8rem; color: #7f8c8d; margin-top: 5px;">
-            Collez l'URL de votre calendrier iCal pour charger automatiquement votre emploi du temps
-        </p>
+    <div class="user-info" id="userInfo" style="display: none;">
+        <div class="user-email" id="userEmail"></div>
+        <div style="font-size: 0.9rem; color: #7f8c8d;">
+            📅 Calendrier chargé automatiquement depuis Firebase
+        </div>
+        
+        <div class="fallback-input" id="fallbackInput">
+            <h4>⚠️ URL du calendrier non trouvée</h4>
+            <p style="margin: 10px 0;">Veuillez saisir manuellement l'URL de votre calendrier :</p>
+            <input type="url" id="manualUrl" placeholder="https://adecampus.univ-rouen.fr/jsp/custom/modules/plannings/anonymous_cal.jsp..." style="width: 100%; padding: 8px; margin: 5px 0;">
+            <button onclick="loadFromManualUrl()" style="background: #e67e22; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                Charger le calendrier
+            </button>
+        </div>
     </div>
 
     <div class="controls">
@@ -365,13 +402,16 @@
         
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            Chargement de l'emploi du temps...
+            <div>Chargement de l'emploi du temps...</div>
+            <div style="font-size: 0.8rem; color: #95a5a6; margin-top: 10px;">
+                Récupération des données depuis Firebase et ADE Campus...
+            </div>
         </div>
         
         <div id="error" class="error" style="display: none;">
             <h3>Erreur de chargement</h3>
             <p id="errorMessage"></p>
-            <button onclick="loadFromUrl()" style="margin-top: 10px; background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+            <button onclick="retryLoading()" style="margin-top: 10px; background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
                 Réessayer
             </button>
         </div>
@@ -381,11 +421,35 @@
         </div>
     </div>
 
-    <script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js';
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD686OpBhCtAgc5ErMi4IO3mgdEFZfGWAM",
+            authDomain: "moncalendrierpersonnel.firebaseapp.com",
+            projectId: "moncalendrierpersonnel",
+            storageBucket: "moncalendrierpersonnel.firebasestorage.app",
+            messagingSenderId: "541374833076",
+            appId: "1:541374833076:web:ae515321fcc8be3b5612e1",
+            measurementId: "G-RFQETZ4WPC"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
+
+        // Variables globales
         let events = [];
         let currentWeekOffset = 0;
-        let timeOffset = 0; // Décalage horaire en heures
-        let isUsingProxy = false;
+        let timeOffset = 0;
+        let currentCalendarUrl = null;
 
         // Heures de cours (8h-18h)
         const timeSlots = [];
@@ -396,16 +460,24 @@
         // Jours de la semaine
         const weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
 
-        function updateConnectionStatus(status, usingProxy = false) {
+        // Fonctions utilitaires
+        function updateConnectionStatus(status, message = '') {
             const statusElement = document.getElementById('connectionStatus');
             statusElement.style.display = 'inline-block';
             
-            if (status === 'success') {
-                statusElement.textContent = 'Connexion proxy optimisée';
-                statusElement.className = 'connection-status proxy';
-            } else if (status === 'error') {
-                statusElement.textContent = 'Erreur de connexion';
-                statusElement.className = 'connection-status error';
+            switch(status) {
+                case 'firebase':
+                    statusElement.textContent = 'Connecté à Firebase';
+                    statusElement.className = 'connection-status firebase';
+                    break;
+                case 'proxy':
+                    statusElement.textContent = 'Connexion proxy optimisée';
+                    statusElement.className = 'connection-status proxy';
+                    break;
+                case 'error':
+                    statusElement.textContent = message || 'Erreur de connexion';
+                    statusElement.className = 'connection-status error';
+                    break;
             }
         }
 
@@ -414,7 +486,7 @@
             document.getElementById('scheduleGrid').style.display = 'none';
             document.getElementById('error').style.display = 'block';
             document.getElementById('errorMessage').textContent = message;
-            updateConnectionStatus('error');
+            updateConnectionStatus('error', 'Erreur');
         }
 
         function hideError() {
@@ -425,7 +497,6 @@
             document.getElementById('loading').style.display = 'block';
             document.getElementById('scheduleGrid').style.display = 'none';
             hideError();
-            document.getElementById('connectionStatus').style.display = 'none';
         }
 
         function hideLoading() {
@@ -433,7 +504,36 @@
             document.getElementById('scheduleGrid').style.display = 'block';
         }
 
-        // Fonction pour parser iCal (version améliorée pour ADE Campus)
+        // Récupérer l'URL du calendrier depuis Firebase
+        async function getCalendarUrlFromFirebase(userEmail) {
+            try {
+                console.log(`🔍 Recherche de l'URL du calendrier pour ${userEmail}...`);
+                
+                const userDocRef = doc(db, 'users', userEmail);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    const calendarUrl = userData.calendarUrl;
+                    
+                    if (calendarUrl) {
+                        console.log('✅ URL du calendrier trouvée dans Firebase');
+                        return calendarUrl;
+                    } else {
+                        console.log('⚠️ Aucune URL de calendrier trouvée pour cet utilisateur');
+                        return null;
+                    }
+                } else {
+                    console.log('⚠️ Aucun document utilisateur trouvé');
+                    return null;
+                }
+            } catch (error) {
+                console.error('❌ Erreur lors de la récupération depuis Firebase:', error);
+                throw error;
+            }
+        }
+
+        // Fonction pour parser iCal
         function parseICalData(icalText) {
             const events = [];
             const lines = icalText.split(/\r?\n/).map(line => line.trim());
@@ -502,7 +602,6 @@
         }
 
         function parseICalDate(dateStr) {
-            // Format: 20250901T070000Z, 20250901T070000, ou avec fuseaux horaires
             let originalDateStr = dateStr;
             let cleanDate = dateStr;
             
@@ -525,7 +624,6 @@
             
             // Si la date se termine par Z (UTC), on ajoute 1h ou 2h selon la saison
             if (originalDateStr.endsWith('Z')) {
-                // Déterminer si on est en heure d'hiver ou d'été
                 const testDate = new Date(date);
                 const jan = new Date(testDate.getFullYear(), 0, 1);
                 const jul = new Date(testDate.getFullYear(), 6, 1);
@@ -540,23 +638,14 @@
             return date;
         }
 
-        async function loadFromUrl() {
-            const url = document.getElementById('icalUrl').value.trim();
-            
-            if (!url) {
-                showError('Veuillez saisir une URL valide');
-                return;
-            }
+        // Charger le calendrier depuis une URL
+        async function loadCalendarFromUrl(url) {
+            console.log('🔄 Chargement du calendrier depuis:', url);
 
-            showLoading();
-            isUsingProxy = true; // On part directement sur le proxy pour éviter les échecs
-
-            // Liste de proxies de fallback
             const proxies = [
-                'https://corsproxy.io/?', // Proxy principal
-                'https://api.allorigins.win/raw?url=', // Backup 1
-                'https://cors-anywhere.herokuapp.com/', // Backup 2 (nécessite activation)
-                'https://proxy.cors.sh/', // Backup 3
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url=',
+                'https://proxy.cors.sh/',
             ];
 
             let lastError = null;
@@ -594,31 +683,87 @@
                     console.log(`📅 ${events.length} événements chargés avec succès`);
                     
                     if (events.length === 0) {
-                        showError('Aucun événement trouvé dans le calendrier');
-                        return;
+                        throw new Error('Aucun événement trouvé dans le calendrier');
                     }
                     
-                    updateConnectionStatus('success', true);
+                    updateConnectionStatus('proxy');
                     hideLoading();
-                    showWeek(currentWeekOffset);
-                    return; // Sortir de la boucle en cas de succès
+                    showWeek(0);
+                    return true;
                     
                 } catch (error) {
                     lastError = error;
                     console.log(`❌ Échec proxy ${i + 1}: ${error.message}`);
                     
-                    // Si ce n'est pas le dernier proxy, continuer
                     if (i < proxies.length - 1) {
                         continue;
                     }
                 }
             }
             
-            // Si tous les proxies ont échoué
-            console.error('❌ Tous les proxies ont échoué');
-            showError(`Impossible de charger le calendrier via tous les proxies disponibles.\n\nDernière erreur: ${lastError?.message || 'Erreur inconnue'}\n\nVérifiez votre connexion internet et l'URL du calendrier.`);
+            throw new Error(`Impossible de charger le calendrier: ${lastError?.message || 'Erreur inconnue'}`);
         }
 
+        // Charger depuis URL manuelle
+        window.loadFromManualUrl = async function() {
+            const url = document.getElementById('manualUrl').value.trim();
+            if (!url) {
+                alert('Veuillez saisir une URL valide');
+                return;
+            }
+
+            showLoading();
+            try {
+                await loadCalendarFromUrl(url);
+                currentCalendarUrl = url;
+                console.log('✅ Calendrier chargé depuis URL manuelle');
+            } catch (error) {
+                showError(error.message);
+            }
+        };
+
+        // Fonction principale de chargement
+        async function loadSchedule() {
+            showLoading();
+            
+            try {
+                // Récupérer l'email depuis localStorage
+                const userEmail = localStorage.getItem('userEmail');
+                
+                if (!userEmail) {
+                    throw new Error('Aucun utilisateur connecté (userEmail non trouvé dans localStorage)');
+                }
+
+                console.log(`👤 Utilisateur connecté: ${userEmail}`);
+                
+                // Afficher les infos utilisateur
+                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('userEmail').textContent = `📧 ${userEmail}`;
+                
+                // Récupérer l'URL du calendrier depuis Firebase
+                const calendarUrl = await getCalendarUrlFromFirebase(userEmail);
+                
+                if (!calendarUrl) {
+                    // Afficher l'input de fallback
+                    document.getElementById('fallbackInput').style.display = 'block';
+                    hideLoading();
+                    updateConnectionStatus('error', 'URL non trouvée');
+                    return;
+                }
+
+                currentCalendarUrl = calendarUrl;
+                updateConnectionStatus('firebase');
+                
+                // Charger le calendrier
+                await loadCalendarFromUrl(calendarUrl);
+                
+            } catch (error) {
+                console.error('❌ Erreur lors du chargement:', error);
+                showError(error.message);
+            }
+        }
+
+        // Fonctions d'affichage du calendrier
         function getWeekStart(weekOffset = 0) {
             const today = new Date();
             const day = today.getDay();
@@ -726,7 +871,7 @@
             document.getElementById('scheduleGrid').innerHTML = html;
         }
 
-        function showWeek(weekOffset) {
+        window.showWeek = function(weekOffset) {
             currentWeekOffset = weekOffset;
             
             // Mettre à jour les boutons
@@ -735,36 +880,53 @@
             });
             
             if (events.length === 0) {
-                document.getElementById('scheduleGrid').innerHTML = '<div class="no-events">Aucun emploi du temps chargé.<br>Veuillez d\'abord saisir une URL iCal valide.</div>';
+                document.getElementById('scheduleGrid').innerHTML = `
+                    <div class="no-events">
+                        <h3>🔄 Chargement de votre emploi du temps...</h3>
+                        <p>Veuillez patienter pendant que nous récupérons vos cours.</p>
+                    </div>
+                `;
                 return;
             }
             
             createScheduleGrid(weekOffset);
-        }
+        };
 
-        function adjustTime(hours) {
-            timeOffset += hours;
-            if (events.length > 0) {
-                showWeek(currentWeekOffset);
-            }
-        }
-
-        function refreshSchedule() {
-            if (document.getElementById('icalUrl').value.trim()) {
-                loadFromUrl();
+        window.refreshSchedule = function() {
+            if (currentCalendarUrl) {
+                showLoading();
+                loadCalendarFromUrl(currentCalendarUrl).catch(error => {
+                    showError(error.message);
+                });
             } else {
-                showError('Aucune URL configurée pour actualiser');
+                loadSchedule();
             }
-        }
+        };
+
+        window.retryLoading = function() {
+            loadSchedule();
+        };
 
         // Initialisation
-        function init() {
-            showWeek(0);
-            
-            // Message de bienvenue dans la console
+        async function init() {
             console.log('📚 Emploi du Temps - Université de Rouen');
-            console.log('✨ Version avec proxy multi-fallback optimisé');
-            console.log('🔧 Proxies disponibles: corsproxy.io, allorigins.win, cors-anywhere, cors.sh');
+            console.log('🔥 Version avec intégration Firebase');
+            console.log('🔧 Proxies disponibles: corsproxy.io, allorigins.win, cors.sh');
+            
+            // Vérifier si on a un utilisateur dans localStorage
+            const userEmail = localStorage.getItem('userEmail');
+            
+            if (userEmail) {
+                console.log(`👤 Utilisateur trouvé: ${userEmail}`);
+                console.log('🚀 Chargement automatique de l\'emploi du temps...');
+                await loadSchedule();
+            } else {
+                console.log('⚠️ Aucun utilisateur trouvé dans localStorage');
+                showError('Aucun utilisateur connecté. Veuillez vous connecter d\'abord.');
+            }
+            
+            // Afficher la semaine actuelle par défaut
+            showWeek(0);
         }
 
         // Démarrer l'application
