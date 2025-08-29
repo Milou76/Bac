@@ -401,13 +401,8 @@
             statusElement.style.display = 'inline-block';
             
             if (status === 'success') {
-                if (usingProxy) {
-                    statusElement.textContent = 'Connexion via proxy';
-                    statusElement.className = 'connection-status proxy';
-                } else {
-                    statusElement.textContent = 'Connexion directe';
-                    statusElement.className = 'connection-status direct';
-                }
+                statusElement.textContent = 'Connexion proxy optimisée';
+                statusElement.className = 'connection-status proxy';
             } else if (status === 'error') {
                 statusElement.textContent = 'Erreur de connexion';
                 statusElement.className = 'connection-status error';
@@ -554,63 +549,74 @@
             }
 
             showLoading();
-            isUsingProxy = false;
+            isUsingProxy = true; // On part directement sur le proxy pour éviter les échecs
 
-            try {
-                let response;
-                let fetchSuccessful = false;
-                
-                // Essayer d'abord directement (silencieux pour éviter les logs d'erreur)
+            // Liste de proxies de fallback
+            const proxies = [
+                'https://corsproxy.io/?', // Proxy principal
+                'https://api.allorigins.win/raw?url=', // Backup 1
+                'https://cors-anywhere.herokuapp.com/', // Backup 2 (nécessite activation)
+                'https://proxy.cors.sh/', // Backup 3
+            ];
+
+            let lastError = null;
+
+            for (let i = 0; i < proxies.length; i++) {
                 try {
-                    response = await fetch(url, {
+                    const proxyUrl = `${proxies[i]}${encodeURIComponent(url)}`;
+                    console.log(`🔄 Tentative ${i + 1}/${proxies.length} avec ${proxies[i].split('//')[1].split('/')[0]}...`);
+                    
+                    const response = await fetch(proxyUrl, {
                         method: 'GET',
                         headers: {
-                            'Accept': 'text/calendar,text/plain,*/*'
+                            'Accept': 'text/calendar,text/plain,*/*',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
                     });
                     
-                    if (response.ok) {
-                        fetchSuccessful = true;
-                        console.log('✅ Connexion directe réussie');
-                    }
-                } catch (directError) {
-                    // Silencieux - on essaiera le proxy
-                }
-                
-                // Si échec, utiliser le proxy CORS
-                if (!fetchSuccessful) {
-                    console.log('🔄 Utilisation du proxy CORS...');
-                    isUsingProxy = true;
-                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
-                    response = await fetch(proxyUrl);
-                    
                     if (!response.ok) {
-                        throw new Error(`Erreur HTTP: ${response.status} - ${response.statusText}`);
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const icalData = await response.text();
+                    
+                    if (!icalData || icalData.length < 100) {
+                        throw new Error('Réponse vide ou trop courte');
+                    }
+                    
+                    if (!icalData.includes('BEGIN:VCALENDAR')) {
+                        throw new Error('Format iCal invalide');
+                    }
+                    
+                    // Succès !
+                    events = parseICalData(icalData);
+                    console.log(`✅ Connexion réussie via ${proxies[i].split('//')[1].split('/')[0]}`);
+                    console.log(`📅 ${events.length} événements chargés avec succès`);
+                    
+                    if (events.length === 0) {
+                        showError('Aucun événement trouvé dans le calendrier');
+                        return;
+                    }
+                    
+                    updateConnectionStatus('success', true);
+                    hideLoading();
+                    showWeek(currentWeekOffset);
+                    return; // Sortir de la boucle en cas de succès
+                    
+                } catch (error) {
+                    lastError = error;
+                    console.log(`❌ Échec proxy ${i + 1}: ${error.message}`);
+                    
+                    // Si ce n'est pas le dernier proxy, continuer
+                    if (i < proxies.length - 1) {
+                        continue;
                     }
                 }
-                
-                const icalData = await response.text();
-                
-                if (!icalData.includes('BEGIN:VCALENDAR')) {
-                    throw new Error('Le fichier ne semble pas être un calendrier iCal valide');
-                }
-                
-                events = parseICalData(icalData);
-                console.log(`📅 ${events.length} événements chargés avec succès`);
-                
-                if (events.length === 0) {
-                    showError('Aucun événement trouvé dans le calendrier');
-                    return;
-                }
-                
-                updateConnectionStatus('success', isUsingProxy);
-                hideLoading();
-                showWeek(currentWeekOffset);
-                
-            } catch (error) {
-                console.error('❌ Erreur de chargement:', error.message);
-                showError(`Impossible de charger le calendrier: ${error.message}\n\nVérifiez que l'URL est correcte et accessible.`);
             }
+            
+            // Si tous les proxies ont échoué
+            console.error('❌ Tous les proxies ont échoué');
+            showError(`Impossible de charger le calendrier via tous les proxies disponibles.\n\nDernière erreur: ${lastError?.message || 'Erreur inconnue'}\n\nVérifiez votre connexion internet et l'URL du calendrier.`);
         }
 
         function getWeekStart(weekOffset = 0) {
@@ -757,7 +763,8 @@
             
             // Message de bienvenue dans la console
             console.log('📚 Emploi du Temps - Université de Rouen');
-            console.log('✨ Version optimisée avec gestion d\'erreurs améliorée');
+            console.log('✨ Version avec proxy multi-fallback optimisé');
+            console.log('🔧 Proxies disponibles: corsproxy.io, allorigins.win, cors-anywhere, cors.sh');
         }
 
         // Démarrer l'application
