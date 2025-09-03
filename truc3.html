@@ -47,20 +47,20 @@
         }
 
         .back-btn {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
             color: white;
-            padding: 10px 18px;
-            border-radius: 25px;
+            padding: 8px 16px;
+            border-radius: 20px;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.25);
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
@@ -76,15 +76,15 @@
         }
 
         .nav-btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
             background: linear-gradient(135deg, #27ae60, #229954);
             color: white;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 500;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
+            transition: all 0.2s;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -95,98 +95,59 @@
             box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
         }
 
-        .nav-btn:active {
-            transform: translateY(0);
-        }
-
         .nav-btn:disabled {
-            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            background: #bdc3c7;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
-        /* Navigation mobile avec swipe dans l'en-tête */
+        /* Navigation mobile avec swipe */
         .mobile-nav {
             display: none;
+            background: white;
+            padding: 20px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
         }
 
-        .mobile-day-header {
-            display: none;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            padding: 20px 15px;
-            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+        .swipe-container {
             position: relative;
             overflow: hidden;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .mobile-day-swipe {
-            position: relative;
+        .swipe-content {
+            color: white;
             text-align: center;
-            user-select: none;
-            cursor: grab;
             transition: transform 0.3s ease;
-        }
-
-        .mobile-day-swipe:active {
-            cursor: grabbing;
+            user-select: none;
         }
 
         .current-day-name {
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-bottom: 8px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 5px;
         }
 
         .current-day-date {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
-            font-weight: 500;
         }
 
-        /* Indicateur de swipe pour mobile dans le calendrier */
-        .mobile-day-indicator {
-            display: none;
-            background: #ecf0f1;
-            padding: 10px 15px;
-            text-align: center;
-            border-bottom: 1px solid #bdc3c7;
-        }
-
-        .mobile-day-indicator .current-mobile-day {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-
-        .swipe-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 0.75rem;
-            color: #7f8c8d;
-        }
-
-        .swipe-dots {
-            display: flex;
-            gap: 4px;
-        }
-
-        .swipe-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            transition: all 0.3s ease;
-        }
-
-        .swipe-dot.active {
-            background: white;
-            transform: scale(1.2);
+        .swipe-hint {
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            opacity: 0.7;
+            color: white;
         }
 
         .week-navigation {
@@ -206,15 +167,15 @@
             max-width: 1200px;
             margin: 20px auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
         .week-header {
-            background: linear-gradient(135deg, #34495e, #2c3e50);
+            background: #34495e;
             color: white;
-            padding: 18px 25px;
+            padding: 15px 20px;
             font-weight: 600;
             display: flex;
             justify-content: space-between;
@@ -225,15 +186,14 @@
             background: #27ae60;
             border: none;
             color: white;
-            padding: 10px 18px;
+            padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .refresh-btn:hover {
@@ -248,25 +208,24 @@
         }
 
         .time-column {
-            background: linear-gradient(180deg, #f8f9fa, #e9ecef);
-            border-right: 2px solid #dee2e6;
+            background: #ecf0f1;
+            border-right: 1px solid #bdc3c7;
         }
 
         .time-slot {
             height: 60px;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid #bdc3c7;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.85rem;
-            font-weight: 600;
-            color: #495057;
+            font-weight: 500;
+            color: #7f8c8d;
         }
 
         .day-column {
-            border-right: 1px solid #dee2e6;
+            border-right: 1px solid #ecf0f1;
             position: relative;
-            background: #fdfdfd;
         }
 
         .day-header {
@@ -291,68 +250,51 @@
             left: 0;
             right: 0;
             height: 1px;
-            background: #f1f3f4;
+            background: #ecf0f1;
         }
 
         .course {
             position: absolute;
-            left: 3px;
-            right: 3px;
-            border-radius: 8px;
-            padding: 8px 10px;
+            left: 2px;
+            right: 2px;
+            border-radius: 4px;
+            padding: 6px 8px;
             font-size: 0.8rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .course:hover {
-            transform: scale(1.03);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            transform: scale(1.02);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
             z-index: 10;
         }
 
         .course-title {
-            font-weight: 700;
-            margin-bottom: 3px;
+            font-weight: 600;
+            margin-bottom: 2px;
             line-height: 1.2;
         }
 
         .course-info {
             font-size: 0.75rem;
-            opacity: 0.95;
+            opacity: 0.9;
             line-height: 1.1;
         }
 
         .course-location {
-            margin-top: 3px;
-            font-weight: 600;
-            font-size: 0.7rem;
+            margin-top: 2px;
+            font-weight: 500;
         }
 
-        /* Couleurs améliorées pour les cours */
-        .course.cm { 
-            background: linear-gradient(135deg, #ff7675, #e17055); 
-            color: white; 
-        }
-        .course.td { 
-            background: linear-gradient(135deg, #fdcb6e, #f39c12); 
-            color: white; 
-        }
-        .course.tp { 
-            background: linear-gradient(135deg, #00b894, #00a085); 
-            color: white; 
-        }
-        .course.portfolio { 
-            background: linear-gradient(135deg, #a29bfe, #6c5ce7); 
-            color: white; 
-        }
-        .course.default { 
-            background: linear-gradient(135deg, #74b9ff, #0984e3); 
-            color: white; 
-        }
+        /* Couleurs des cours selon le type */
+        .course.cm { background: #e74c3c; color: white; }
+        .course.td { background: #f39c12; color: white; }
+        .course.tp { background: #27ae60; color: white; }
+        .course.portfolio { background: #9b59b6; color: white; }
+        .course.default { background: #3498db; color: white; }
 
         .loading {
             text-align: center;
@@ -362,7 +304,7 @@
 
         .spinner {
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #74b9ff;
+            border-top: 3px solid #3498db;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -379,16 +321,16 @@
             text-align: center;
             padding: 40px;
             color: #e74c3c;
-            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            background: #fdf2f2;
             margin: 20px;
-            border-radius: 12px;
-            border: 2px solid #e17055;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
         }
 
         .no-events {
             text-align: center;
             padding: 40px;
-            color: #74b9ff;
+            color: #7f8c8d;
             font-style: italic;
         }
 
@@ -398,14 +340,6 @@
             }
             
             .mobile-nav {
-                display: block;
-            }
-            
-            .mobile-day-header {
-                display: block;
-            }
-            
-            .mobile-day-indicator {
                 display: block;
             }
             
@@ -468,7 +402,7 @@
             }
             
             .refresh-btn {
-                padding: 8px 14px;
+                padding: 5px 10px;
                 font-size: 0.75rem;
             }
             
@@ -481,19 +415,6 @@
             .spinner {
                 width: 30px;
                 height: 30px;
-            }
-
-            .current-day-name {
-                font-size: 1.6rem;
-            }
-
-            .current-day-date {
-                font-size: 1rem;
-            }
-
-            .nav-btn {
-                padding: 10px 16px;
-                font-size: 0.8rem;
             }
         }
 
@@ -522,13 +443,67 @@
             }
             
             .current-day-name {
-                font-size: 1.4rem;
+                font-size: 1.2rem;
             }
             
             .current-day-date {
-                font-size: 0.95rem;
+                font-size: 0.9rem;
             }
         }
+        .course.default { 
+    background: linear-gradient(135deg, #1a1c1d, #2c2f33); 
+    color: white; 
+}
+
+/* Nouvelles couleurs par matière */
+.course.integration { 
+    background: linear-gradient(135deg, #4A90E2, #357ABD); 
+    color: white; 
+}
+.course.dev-web { 
+    background: linear-gradient(135deg, #F5A623, #E6941A); 
+    color: white; 
+}
+.course.anglais { 
+    background: linear-gradient(135deg, #7ED321, #6BB91C); 
+    color: white; 
+}
+.course.expression { 
+    background: linear-gradient(135deg, #D0021B, #B71C1C); 
+    color: white; 
+}
+.course.ergonomie { 
+    background: linear-gradient(135deg, #9013FE, #7B1FA2); 
+    color: white; 
+}
+.course.hebergement { 
+    background: linear-gradient(135deg, #FF6B35, #E55722); 
+    color: white; 
+}
+.course.ecriture { 
+    background: linear-gradient(135deg, #50E3C2, #4ECDC4); 
+    color: white; 
+}
+.course.production-graphique { 
+    background: linear-gradient(135deg, #FF1744, #C62828); 
+    color: white; 
+}
+.course.culture-artistique { 
+    background: linear-gradient(135deg, #673AB7, #512DA8); 
+    color: white; 
+}
+.course.strategie-marketing { 
+    background: linear-gradient(135deg, #FF9800, #F57C00); 
+    color: white; 
+}
+.course.representation-info { 
+    background: linear-gradient(135deg, #00BCD4, #0097A7); 
+    color: white; 
+}
+.course.culture-numerique { 
+    background: linear-gradient(135deg, #4f7f86, #0097A7); 
+    color: white; 
+}
     </style>
 </head>
 <body>
@@ -546,8 +521,15 @@
         <button class="nav-btn" onclick="nextWeek()">Semaine suivante »</button>
     </div>
 
-    <!-- Navigation mobile (cachée maintenant) -->
+    <!-- Navigation mobile avec swipe -->
     <div class="mobile-nav">
+        <div class="swipe-container" id="swipeContainer">
+            <div class="swipe-content" id="swipeContent">
+                <div class="current-day-name" id="currentDayName">Lundi</div>
+                <div class="current-day-date" id="currentDayDate">1 Jan</div>
+            </div>
+            <div class="swipe-hint">← Glissez pour naviguer →</div>
+        </div>
         <div class="week-navigation">
             <button class="nav-btn" onclick="previousWeek()" id="prevWeekBtn">« Semaine préc.</button>
             <button class="nav-btn" onclick="nextWeek()" id="nextWeekBtn">Semaine suiv. »</button>
@@ -558,14 +540,6 @@
         <div class="week-header">
             <span id="weekTitle">Chargement...</span>
             <button class="refresh-btn" onclick="refreshSchedule()">🔄 Actualiser</button>
-        </div>
-        
-        <!-- Indicateur de navigation mobile -->
-        <div class="mobile-day-indicator">
-            <div class="current-mobile-day" id="currentMobileDay">Lundi 1/9</div>
-            <div class="swipe-indicator">
-                <span>← Glissez pour naviguer →</span>
-            </div>
         </div>
         
         <div id="loading" class="loading">
@@ -620,7 +594,6 @@
         let timeOffset = 0;
         let currentCalendarUrl = null;
         let currentDate = new Date();
-        let currentDayIndex = 0; // 0 = Lundi, 4 = Vendredi
         
         // Variables pour le swipe
         let startX = 0;
@@ -854,55 +827,30 @@
             // Si c'est le weekend, aller au lundi suivant
             if (day === 0) { // Dimanche
                 currentDate.setDate(today.getDate() + 1);
-                currentDayIndex = 0;
             } else if (day === 6) { // Samedi
                 currentDate.setDate(today.getDate() + 2);
-                currentDayIndex = 0;
             } else {
                 currentDate = new Date(today);
-                currentDayIndex = day - 1; // Lundi = 0, Vendredi = 4
             }
         }
 
         function updateMobileView() {
-            const dayName = weekDays[currentDayIndex];
-            const weekStart = getWeekStart(currentWeekOffset);
-            const currentDayDate = new Date(weekStart);
-            currentDayDate.setDate(currentDayDate.getDate() + currentDayIndex);
-            
+            const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
             const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
             
-            const dayDate = `${currentDayDate.getDate()} ${monthNames[currentDayDate.getMonth()]}`;
+            const dayName = dayNames[currentDate.getDay()];
+            const dayDate = `${currentDate.getDate()} ${monthNames[currentDate.getMonth()]}`;
             
             document.getElementById('currentDayName').textContent = dayName;
             document.getElementById('currentDayDate').textContent = dayDate;
             
-            // Mettre à jour l'indicateur dans le calendrier pour mobile
-            if (document.getElementById('currentMobileDay')) {
-                document.getElementById('currentMobileDay').textContent = `${dayName} ${currentDayDate.getDate()}/${currentDayDate.getMonth() + 1}`;
-            }
-            
-            // Mettre à jour les indicateurs
-            updateSwipeDots();
-            
             createMobileDayView();
         }
 
-        function updateSwipeDots() {
-            const dots = document.querySelectorAll('.swipe-dot');
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentDayIndex);
-            });
-        }
-
         function createMobileDayView() {
-            const weekStart = getWeekStart(currentWeekOffset);
-            const currentDayDate = new Date(weekStart);
-            currentDayDate.setDate(currentDayDate.getDate() + currentDayIndex);
-            
             const dayEvents = events.filter(event => {
                 const eventDate = new Date(event.start);
-                return eventDate.toDateString() === currentDayDate.toDateString();
+                return eventDate.toDateString() === currentDate.toDateString();
             });
             
             let html = '';
@@ -914,14 +862,15 @@
             });
             html += '</div>';
             
-            const dayName = weekDays[currentDayIndex];
+            const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+            const dayName = dayNames[currentDate.getDay()];
             
             html += '<div class="day-column">';
-            html += `<div class="day-header">${dayName}</div>`;
+            html += `<div class="day-header">${dayName}<br><small>${currentDate.getDate()}/${currentDate.getMonth() + 1}</small></div>`;
             html += '<div class="day-grid" style="position: relative;">';
             
             for (let i = 1; i < timeSlots.length; i++) {
-                html += `<div class="grid-line" style="position: absolute; top: ${i * 50}px; left: 0; right: 0; height: 1px; background: #f1f3f4;"></div>`;
+                html += `<div class="grid-line" style="position: absolute; top: ${i * 50}px; left: 0; right: 0; height: 1px; background: #ecf0f1;"></div>`;
             }
             
             dayEvents.forEach(event => {
@@ -958,18 +907,14 @@
             document.getElementById('mobileScheduleGrid').innerHTML = html;
         }
 
+        // Gestion du swipe sur mobile
         function initSwipeGestures() {
-    const swipeContainers = [
-        document.getElementById('mobileDaySwipe'),
-        document.getElementById('mobileScheduleGrid')
-    ];
-    swipeContainers.forEach(swipeContainer => {
-        if (!swipeContainer) return;
-        swipeContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-        swipeContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
-        swipeContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
-    });
-}
+            const swipeContainer = document.getElementById('swipeContainer');
+            
+            swipeContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+            swipeContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+            swipeContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+        }
 
         function handleTouchStart(e) {
             startX = e.touches[0].clientX;
@@ -987,7 +932,7 @@
             
             // Vérifier si c'est un swipe horizontal
             if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
-                const swipeContent = document.getElementById('mobileDaySwipe');
+                const swipeContent = document.getElementById('swipeContent');
                 const translateX = Math.max(-50, Math.min(50, -diffX / 4));
                 swipeContent.style.transform = `translateX(${translateX}px)`;
             }
@@ -998,7 +943,7 @@
             
             const endX = e.changedTouches[0].clientX;
             const diffX = startX - endX;
-            const swipeContent = document.getElementById('mobileDaySwipe');
+            const swipeContent = document.getElementById('swipeContent');
             
             // Reset de l'animation
             swipeContent.style.transform = 'translateX(0)';
@@ -1018,30 +963,39 @@
         }
 
         function previousDay() {
-            if (currentDayIndex > 0) {
-                currentDayIndex--;
-            } else {
-                // Aller à la semaine précédente, vendredi
-                if (currentWeekOffset > -10) {
-                    currentWeekOffset--;
-                    currentDayIndex = 4; // Vendredi
-                }
-            }
-            updateMobileView();
+    // Si on est lundi, on passe au vendredi de la semaine précédente
+    if (currentDate.getDay() === 1) {
+        currentDate.setDate(currentDate.getDate() - 3); // Lundi -> Vendredi précédent
+        window.previousWeek();
+    } else {
+        currentDate.setDate(currentDate.getDate() - 1);
+        // Sauter le week-end
+        if (currentDate.getDay() === 0) { // Dimanche
+            currentDate.setDate(currentDate.getDate() - 2);
+        } else if (currentDate.getDay() === 6) { // Samedi
+            currentDate.setDate(currentDate.getDate() - 1);
         }
+    }
+    updateMobileView();
+}
 
-        function nextDay() {
-            if (currentDayIndex < 4) {
-                currentDayIndex++;
-            } else {
-                // Aller à la semaine suivante, lundi
-                if (currentWeekOffset < 10) {
-                    currentWeekOffset++;
-                    currentDayIndex = 0; // Lundi
-                }
-            }
-            updateMobileView();
+function nextDay() {
+    // Si on est vendredi, on passe au lundi de la semaine suivante
+    if (currentDate.getDay() === 5) {
+        currentDate.setDate(currentDate.getDate() + 3); // Vendredi -> Lundi suivant
+        window.nextWeek();
+    } else {
+        currentDate.setDate(currentDate.getDate() + 1);
+        // Sauter le week-end
+        if (currentDate.getDay() === 6) { // Samedi
+            currentDate.setDate(currentDate.getDate() + 2);
+        } else if (currentDate.getDay() === 0) { // Dimanche
+            currentDate.setDate(currentDate.getDate() + 1);
         }
+    }
+    updateMobileView();
+}
+
 
         function getWeekStart(weekOffset = 0) {
             const today = new Date();
@@ -1063,14 +1017,31 @@
             });
         }
 
-        function getCourseType(title) {
-            const titleLower = title.toLowerCase();
-            if (titleLower.includes('cm ') || titleLower.startsWith('cm ')) return 'cm';
-            if (titleLower.includes('td ') || titleLower.startsWith('td ')) return 'td';
-            if (titleLower.includes('tp ') || titleLower.startsWith('tp ')) return 'tp';
-            if (titleLower.includes('portfolio')) return 'portfolio';
-            return 'default';
-        }
+                function getCourseType(title) {
+    const titleLower = title.toLowerCase();
+    
+    // Vérification par matière
+    if (titleLower.includes('intégration')) return 'integration';
+    if (titleLower.includes('développement web')) return 'dev-web';
+    if (titleLower.includes('anglais')) return 'anglais';
+    if (titleLower.includes('expression, communication et rhétorique')) return 'expression';
+    if (titleLower.includes('ergonomie et accessibilité')) return 'ergonomie';
+    if (titleLower.includes('hébergement')) return 'hebergement';
+    if (titleLower.includes('ecriture multimédia et narration')) return 'ecriture';
+    if (titleLower.includes('production graphique')) return 'production-graphique';
+    if (titleLower.includes('culture artistique')) return 'culture-artistique';
+    if (titleLower.includes('stratégies de communication et marketing')) return 'strategie-marketing';
+    if (titleLower.includes('représentation et traitement de l\'information')) return 'representation-info';
+    if (titleLower.includes('culture numérique')) return 'culture-numerique';
+
+    // Types de cours par défaut (CM, TD, TP, etc.)
+    if (titleLower.includes('cm ') || titleLower.startsWith('cm ')) return 'cm';
+    if (titleLower.includes('td ') || titleLower.startsWith('td ')) return 'td';
+    if (titleLower.includes('tp ') || titleLower.startsWith('tp ')) return 'tp';
+    if (titleLower.includes('portfolio')) return 'portfolio';
+    
+    return 'default';
+}
 
         function createScheduleGrid(weekOffset) {
             const weekEvents = getEventsForWeek(weekOffset);
@@ -1151,6 +1122,9 @@
                 if (events.length > 0) {
                     createScheduleGrid(currentWeekOffset);
                     if (window.innerWidth <= 768) {
+                        const newWeekStart = getWeekStart(currentWeekOffset);
+                        currentDate = new Date(newWeekStart);
+                        if (currentDate.getDay() === 0) currentDate.setDate(currentDate.getDate() + 1);
                         updateMobileView();
                     }
                 }
@@ -1163,6 +1137,9 @@
                 if (events.length > 0) {
                     createScheduleGrid(currentWeekOffset);
                     if (window.innerWidth <= 768) {
+                        const newWeekStart = getWeekStart(currentWeekOffset);
+                        currentDate = new Date(newWeekStart);
+                        if (currentDate.getDay() === 0) currentDate.setDate(currentDate.getDate() + 1);
                         updateMobileView();
                     }
                 }
@@ -1185,6 +1162,9 @@
             createScheduleGrid(weekOffset);
 
             if (window.innerWidth <= 768) {
+                const newWeekStart = getWeekStart(currentWeekOffset);
+                currentDate = new Date(newWeekStart);
+                if (currentDate.getDay() === 0) currentDate.setDate(currentDate.getDate() + 1);
                 updateMobileView();
             }
         };
@@ -1231,7 +1211,7 @@
 
         // Initialisation
         async function init() {
-            console.log('📚 Emploi du Temps - Version mobile améliorée');
+            console.log('📚 Emploi du Temps - Version améliorée');
             
             initializeCurrentDate();
             initSwipeGestures();
@@ -1252,7 +1232,7 @@
         }
 
         init();
-        console.log('Cest ce script ou ya le bon truc !');
     </script>
 </body>
 </html>
+<!-- C'est ce script il fonctionne très bien calendrier + horaires-->
