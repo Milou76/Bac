@@ -1,0 +1,1258 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emploi du Temps - Université de Rouen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.4;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .controls {
+            background: white;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: none;
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
+        }
+
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+
+        .nav-btn:disabled {
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Navigation mobile avec swipe dans l'en-tête */
+        .mobile-nav {
+            display: none;
+        }
+
+        .mobile-day-header {
+            display: none;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px 15px;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mobile-day-swipe {
+            position: relative;
+            text-align: center;
+            user-select: none;
+            cursor: grab;
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-day-swipe:active {
+            cursor: grabbing;
+        }
+
+        .current-day-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .current-day-date {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Indicateur de swipe pour mobile dans le calendrier */
+        .mobile-day-indicator {
+            display: none;
+            background: #ecf0f1;
+            padding: 10px 15px;
+            text-align: center;
+            border-bottom: 1px solid #bdc3c7;
+        }
+
+        .mobile-day-indicator .current-mobile-day {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .swipe-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+        }
+
+        .swipe-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .swipe-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .swipe-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .week-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .mobile-schedule-grid {
+            display: none;
+            grid-template-columns: 80px 1fr;
+            min-height: 600px;
+        }
+
+        .schedule-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .week-header {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            padding: 18px 25px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            background: #27ae60;
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn:hover {
+            background: #229954;
+            transform: translateY(-1px);
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(5, 1fr);
+            min-height: 600px;
+        }
+
+        .time-column {
+            background: linear-gradient(180deg, #f8f9fa, #e9ecef);
+            border-right: 2px solid #dee2e6;
+        }
+
+        .time-slot {
+            height: 60px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .day-column {
+            border-right: 1px solid #dee2e6;
+            position: relative;
+            background: #fdfdfd;
+        }
+
+        .day-header {
+            height: 50px;
+            background: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #2980b9;
+        }
+
+        .day-grid {
+            position: relative;
+            height: calc(100% - 50px);
+        }
+
+        .grid-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #f1f3f4;
+        }
+
+        .course {
+            position: absolute;
+            left: 3px;
+            right: 3px;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .course:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            z-index: 10;
+        }
+
+        .course-title {
+            font-weight: 700;
+            margin-bottom: 3px;
+            line-height: 1.2;
+        }
+
+        .course-info {
+            font-size: 0.75rem;
+            opacity: 0.95;
+            line-height: 1.1;
+        }
+
+        .course-location {
+            margin-top: 3px;
+            font-weight: 600;
+            font-size: 0.7rem;
+        }
+
+        /* Couleurs améliorées pour les cours */
+        .course.cm { 
+            background: linear-gradient(135deg, #ff7675, #e17055); 
+            color: white; 
+        }
+        .course.td { 
+            background: linear-gradient(135deg, #fdcb6e, #f39c12); 
+            color: white; 
+        }
+        .course.tp { 
+            background: linear-gradient(135deg, #00b894, #00a085); 
+            color: white; 
+        }
+        .course.portfolio { 
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7); 
+            color: white; 
+        }
+        .course.default { 
+            background: linear-gradient(135deg, #74b9ff, #0984e3); 
+            color: white; 
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #74b9ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #e74c3c;
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            margin: 20px;
+            border-radius: 12px;
+            border: 2px solid #e17055;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 40px;
+            color: #74b9ff;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                display: none;
+            }
+            
+            .mobile-nav {
+                display: block;
+            }
+            
+            .mobile-day-header {
+                display: block;
+            }
+            
+            .mobile-day-indicator {
+                display: block;
+            }
+            
+            .schedule-grid {
+                display: none;
+            }
+            
+            .mobile-schedule-grid {
+                display: grid;
+                grid-template-columns: 70px 1fr;
+                font-size: 0.9rem;
+            }
+            
+            .time-slot {
+                height: 50px;
+                font-size: 0.75rem;
+                padding: 2px;
+            }
+            
+            .day-header {
+                height: 40px;
+                font-size: 0.85rem;
+                padding: 5px;
+            }
+            
+            .course {
+                padding: 6px 8px;
+                font-size: 0.75rem;
+                border-radius: 6px;
+                margin: 1px;
+            }
+            
+            .course-title {
+                font-size: 0.8rem;
+                line-height: 1.1;
+                margin-bottom: 3px;
+            }
+            
+            .course-info {
+                font-size: 0.7rem;
+            }
+            
+            .course-location {
+                font-size: 0.7rem;
+                margin-top: 2px;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .header-info {
+                font-size: 0.85rem;
+                margin-top: 5px;
+            }
+            
+            .week-header {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .refresh-btn {
+                padding: 8px 14px;
+                font-size: 0.75rem;
+            }
+            
+            .loading, .error {
+                padding: 30px 20px;
+                margin: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .spinner {
+                width: 30px;
+                height: 30px;
+            }
+
+            .current-day-name {
+                font-size: 1.6rem;
+            }
+
+            .current-day-date {
+                font-size: 1rem;
+            }
+
+            .nav-btn {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .mobile-schedule-grid {
+                grid-template-columns: 60px 1fr;
+                font-size: 0.8rem;
+            }
+            
+            .time-slot {
+                font-size: 0.7rem;
+                height: 45px;
+            }
+            
+            .course {
+                padding: 4px 6px;
+                font-size: 0.7rem;
+            }
+            
+            .course-title {
+                font-size: 0.75rem;
+            }
+            
+            .course-info, .course-location {
+                font-size: 0.65rem;
+            }
+            
+            .current-day-name {
+                font-size: 1.4rem;
+            }
+            
+            .current-day-date {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>📚 Emploi du Temps</h1>
+            <div class="header-info">
+                <a href="../" class="back-btn">🏠 Accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="nav-btn" onclick="previousWeek()">« Semaine précédente</button>
+        <button class="nav-btn" onclick="nextWeek()">Semaine suivante »</button>
+    </div>
+
+    <!-- Navigation mobile (cachée maintenant) -->
+    <div class="mobile-nav">
+        <div class="week-navigation">
+            <button class="nav-btn" onclick="previousWeek()" id="prevWeekBtn">« Semaine préc.</button>
+            <button class="nav-btn" onclick="nextWeek()" id="nextWeekBtn">Semaine suiv. »</button>
+        </div>
+    </div>
+
+    <div class="schedule-container">
+        <div class="week-header">
+            <span id="weekTitle">Chargement...</span>
+            <button class="refresh-btn" onclick="refreshSchedule()">🔄 Actualiser</button>
+        </div>
+        
+        <!-- Indicateur de navigation mobile -->
+        <div class="mobile-day-indicator">
+            <div class="current-mobile-day" id="currentMobileDay">Lundi 1/9</div>
+            <div class="swipe-indicator">
+                <span>← Glissez pour naviguer →</span>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <div>Chargement de l'emploi du temps...</div>
+        </div>
+        
+        <div id="error" class="error" style="display: none;">
+            <h3>Erreur de chargement</h3>
+            <p id="errorMessage"></p>
+            <button onclick="retryLoading()" style="margin-top: 10px; background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                Réessayer
+            </button>
+        </div>
+        
+        <div id="scheduleGrid" style="display: none;">
+            <!-- La grille sera générée ici -->
+        </div>
+        
+        <div id="mobileScheduleGrid" class="mobile-schedule-grid" style="display: none;">
+            <!-- La grille mobile sera générée ici -->
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js';
+
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD686OpBhCtAgc5ErMi4IO3mgdEFZfGWAM",
+            authDomain: "moncalendrierpersonnel.firebaseapp.com",
+            projectId: "moncalendrierpersonnel",
+            storageBucket: "moncalendrierpersonnel.firebasestorage.app",
+            messagingSenderId: "541374833076",
+            appId: "1:541374833076:web:ae515321fcc8be3b5612e1",
+            measurementId: "G-RFQETZ4WPC"
+        };
+
+        // Initialiser Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
+
+        // Variables globales
+        let events = [];
+        let currentWeekOffset = 0;
+        let timeOffset = 0;
+        let currentCalendarUrl = null;
+        let currentDate = new Date();
+        let currentDayIndex = 0; // 0 = Lundi, 4 = Vendredi
+        
+        // Variables pour le swipe
+        let startX = 0;
+        let startY = 0;
+        let isSwipeActive = false;
+
+        // Heures de cours (8h-20h)
+        const timeSlots = [];
+        for (let h = 8; h <= 20; h++) {
+            timeSlots.push(`${h.toString().padStart(2, '0')}:00`);
+        }
+
+        // Jours de la semaine
+        const weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+
+        function showError(message) {
+            console.error('❌ Erreur:', message);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('scheduleGrid').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('scheduleGrid').style.display = 'none';
+            hideError();
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('scheduleGrid').style.display = 'block';
+            document.getElementById('mobileScheduleGrid').style.display = 'none';
+            
+            // Sur mobile, afficher la grille mobile
+            if (window.innerWidth <= 768) {
+                document.getElementById('scheduleGrid').style.display = 'none';
+                document.getElementById('mobileScheduleGrid').style.display = 'grid';
+            }
+        }
+
+        // Récupérer l'URL du calendrier depuis Firebase
+        async function getCalendarUrlFromFirebase(userEmail) {
+            try {
+                const userDocRef = doc(db, 'users', userEmail);
+                const userDoc = await getDoc(userDocRef);
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    return userData.calendarUrl || null;
+                } else {
+                    return null;
+                }
+            } catch (error) {
+                console.error('❌ Erreur Firebase:', error);
+                throw error;
+            }
+        }
+
+        // Fonction pour parser iCal
+        function parseICalData(icalText) {
+            const events = [];
+            const lines = icalText.split(/\r?\n/).map(line => line.trim());
+            
+            let currentEvent = null;
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                
+                // Gérer les lignes qui continuent (commencent par un espace)
+                while (i + 1 < lines.length && lines[i + 1].match(/^\s/)) {
+                    i++;
+                    line += lines[i].substring(1);
+                }
+                
+                if (line === 'BEGIN:VEVENT') {
+                    currentEvent = {};
+                } else if (line === 'END:VEVENT' && currentEvent) {
+                    if (currentEvent.start && currentEvent.end && currentEvent.title) {
+                        // Nettoyer le titre
+                        currentEvent.title = currentEvent.title
+                            .replace(/\\n/g, ' ')
+                            .replace(/\\,/g, ',')
+                            .replace(/\\;/g, ';')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                        
+                        events.push(currentEvent);
+                    }
+                    currentEvent = null;
+                } else if (currentEvent && line.includes(':')) {
+                    const colonIndex = line.indexOf(':');
+                    const key = line.substring(0, colonIndex);
+                    const value = line.substring(colonIndex + 1);
+                    
+                    if (key.startsWith('DTSTART')) {
+                        currentEvent.start = parseICalDate(value);
+                    } else if (key.startsWith('DTEND')) {
+                        currentEvent.end = parseICalDate(value);
+                    } else if (key === 'SUMMARY') {
+                        currentEvent.title = value;
+                    } else if (key === 'LOCATION') {
+                        currentEvent.location = value.replace(/\\n/g, ' ').replace(/\\,/g, ',').replace(/\\;/g, ';');
+                    } else if (key === 'DESCRIPTION') {
+                        const desc = value.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';');
+                        
+                        const profPatterns = [
+                            /(?:Enseignant|Professeur|Prof)[:\s]*([^\n\r]*)/i,
+                            /^([A-Z]+\s+[A-Z]+(?:\s+[A-Z]+)*)$/m,
+                            /\n([A-Z][A-Z\s]+[A-Z])(?:\n|$)/
+                        ];
+                        
+                        for (const pattern of profPatterns) {
+                            const match = desc.match(pattern);
+                            if (match && match[1]) {
+                                currentEvent.professor = match[1].trim();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return events;
+        }
+
+        function parseICalDate(dateStr) {
+            let originalDateStr = dateStr;
+            let cleanDate = dateStr;
+            
+            // Gérer les paramètres de fuseau horaire
+            if (cleanDate.includes(';')) {
+                cleanDate = cleanDate.split(';')[0];
+            }
+            
+            // Nettoyer la chaîne
+            cleanDate = cleanDate.replace(/[TZ]/g, '');
+            
+            const year = cleanDate.substr(0, 4);
+            const month = cleanDate.substr(4, 2);
+            const day = cleanDate.substr(6, 2);
+            const hour = cleanDate.substr(8, 2) || '00';
+            const minute = cleanDate.substr(10, 2) || '00';
+            
+            // Créer la date de base
+            let date = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`);
+            
+            // Si la date se termine par Z (UTC), on ajoute 1h ou 2h selon la saison
+            if (originalDateStr.endsWith('Z')) {
+                const testDate = new Date(date);
+                const jan = new Date(testDate.getFullYear(), 0, 1);
+                const jul = new Date(testDate.getFullYear(), 6, 1);
+                const stdOffset = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+                const isDST = testDate.getTimezoneOffset() < stdOffset;
+                
+                const offset = isDST ? 2 : 1;
+                date = new Date(date.getTime() + offset * 60 * 60 * 1000);
+            }
+            
+            return date;
+        }
+
+        // Charger le calendrier depuis une URL
+        async function loadCalendarFromUrl(url) {
+            const proxies = [
+                'https://corsproxy.io/?',
+                'https://api.allorigins.win/raw?url=',
+                'https://proxy.cors.sh/',
+            ];
+
+            let lastError = null;
+
+            for (let i = 0; i < proxies.length; i++) {
+                try {
+                    const proxyUrl = `${proxies[i]}${encodeURIComponent(url)}`;
+                    
+                    const response = await fetch(proxyUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'text/calendar,text/plain,*/*',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const icalData = await response.text();
+                    
+                    if (!icalData || icalData.length < 100) {
+                        throw new Error('Réponse vide ou trop courte');
+                    }
+                    
+                    if (!icalData.includes('BEGIN:VCALENDAR')) {
+                        throw new Error('Format iCal invalide');
+                    }
+                    
+                    // Succès !
+                    events = parseICalData(icalData);
+                    
+                    if (events.length === 0) {
+                        throw new Error('Aucun événement trouvé dans le calendrier');
+                    }
+                    
+                    hideLoading();
+                    showWeek(0);
+                    return true;
+                    
+                } catch (error) {
+                    lastError = error;
+                    
+                    if (i < proxies.length - 1) {
+                        continue;
+                    }
+                }
+            }
+            
+            throw new Error(`Impossible de charger le calendrier: ${lastError?.message || 'Erreur inconnue'}`);
+        }
+
+        // Fonctions de navigation
+        function initializeCurrentDate() {
+            const today = new Date();
+            const day = today.getDay();
+            
+            // Si c'est le weekend, aller au lundi suivant
+            if (day === 0) { // Dimanche
+                currentDate.setDate(today.getDate() + 1);
+                currentDayIndex = 0;
+            } else if (day === 6) { // Samedi
+                currentDate.setDate(today.getDate() + 2);
+                currentDayIndex = 0;
+            } else {
+                currentDate = new Date(today);
+                currentDayIndex = day - 1; // Lundi = 0, Vendredi = 4
+            }
+        }
+
+        function updateMobileView() {
+            const dayName = weekDays[currentDayIndex];
+            const weekStart = getWeekStart(currentWeekOffset);
+            const currentDayDate = new Date(weekStart);
+            currentDayDate.setDate(currentDayDate.getDate() + currentDayIndex);
+            
+            const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+            
+            const dayDate = `${currentDayDate.getDate()} ${monthNames[currentDayDate.getMonth()]}`;
+            
+            document.getElementById('currentDayName').textContent = dayName;
+            document.getElementById('currentDayDate').textContent = dayDate;
+            
+            // Mettre à jour l'indicateur dans le calendrier pour mobile
+            if (document.getElementById('currentMobileDay')) {
+                document.getElementById('currentMobileDay').textContent = `${dayName} ${currentDayDate.getDate()}/${currentDayDate.getMonth() + 1}`;
+            }
+            
+            // Mettre à jour les indicateurs
+            updateSwipeDots();
+            
+            createMobileDayView();
+        }
+
+        function updateSwipeDots() {
+            const dots = document.querySelectorAll('.swipe-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentDayIndex);
+            });
+        }
+
+        function createMobileDayView() {
+            const weekStart = getWeekStart(currentWeekOffset);
+            const currentDayDate = new Date(weekStart);
+            currentDayDate.setDate(currentDayDate.getDate() + currentDayIndex);
+            
+            const dayEvents = events.filter(event => {
+                const eventDate = new Date(event.start);
+                return eventDate.toDateString() === currentDayDate.toDateString();
+            });
+            
+            let html = '';
+            
+            html += '<div class="time-column">';
+            html += '<div class="time-slot" style="height: 40px;"></div>'; // Header vide
+            timeSlots.forEach(time => {
+                html += `<div class="time-slot">${time}</div>`;
+            });
+            html += '</div>';
+            
+            const dayName = weekDays[currentDayIndex];
+            
+            html += '<div class="day-column">';
+            html += `<div class="day-header">${dayName}</div>`;
+            html += '<div class="day-grid" style="position: relative;">';
+            
+            for (let i = 1; i < timeSlots.length; i++) {
+                html += `<div class="grid-line" style="position: absolute; top: ${i * 50}px; left: 0; right: 0; height: 1px; background: #f1f3f4;"></div>`;
+            }
+            
+            dayEvents.forEach(event => {
+                const startDate = new Date(event.start.getTime() + timeOffset * 60 * 60 * 1000);
+                const endDate = new Date(event.end.getTime() + timeOffset * 60 * 60 * 1000);
+                
+                const startHour = startDate.getHours();
+                const startMinute = startDate.getMinutes();
+                const endHour = endDate.getHours();
+                const endMinute = endDate.getMinutes();
+                
+                const startPos = (startHour - 8) * 50 + (startMinute / 60) * 50;
+                const duration = ((endHour - startHour) * 60 + (endMinute - startMinute)) / 60 * 50;
+                
+                if (startPos >= 0 && startPos < 650) {
+                    const courseType = getCourseType(event.title);
+                    
+                    html += `
+                        <div class="course ${courseType}" 
+                             style="position: absolute; top: ${startPos}px; height: ${duration}px; left: 2px; right: 2px;"
+                             title="${event.title}&#10;${startDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} - ${endDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}&#10;${event.location || ''}${event.professor ? '&#10;' + event.professor : ''}">
+                            <div class="course-title">${event.title}</div>
+                            <div class="course-info">
+                                ${startDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} - ${endDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
+                            </div>
+                            ${event.location ? `<div class="course-location">${event.location}</div>` : ''}
+                        </div>
+                    `;
+                }
+            });
+            
+            html += '</div></div>';
+            
+            document.getElementById('mobileScheduleGrid').innerHTML = html;
+        }
+
+        function initSwipeGestures() {
+    const swipeContainers = [
+        document.getElementById('mobileDaySwipe'),
+        document.getElementById('mobileScheduleGrid')
+    ];
+    swipeContainers.forEach(swipeContainer => {
+        if (!swipeContainer) return;
+        swipeContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+        swipeContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+        swipeContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+    });
+}
+
+        function handleTouchStart(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isSwipeActive = true;
+        }
+
+        function handleTouchMove(e) {
+            if (!isSwipeActive) return;
+            
+            const currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
+            const diffX = startX - currentX;
+            const diffY = startY - currentY;
+            
+            // Vérifier si c'est un swipe horizontal
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+                const swipeContent = document.getElementById('mobileDaySwipe');
+                const translateX = Math.max(-50, Math.min(50, -diffX / 4));
+                swipeContent.style.transform = `translateX(${translateX}px)`;
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (!isSwipeActive) return;
+            
+            const endX = e.changedTouches[0].clientX;
+            const diffX = startX - endX;
+            const swipeContent = document.getElementById('mobileDaySwipe');
+            
+            // Reset de l'animation
+            swipeContent.style.transform = 'translateX(0)';
+            
+            // Seuil de swipe (50px minimum)
+            if (Math.abs(diffX) > 50) {
+                if (diffX > 0) {
+                    // Swipe vers la gauche = jour suivant
+                    nextDay();
+                } else {
+                    // Swipe vers la droite = jour précédent
+                    previousDay();
+                }
+            }
+            
+            isSwipeActive = false;
+        }
+
+        function previousDay() {
+            if (currentDayIndex > 0) {
+                currentDayIndex--;
+            } else {
+                // Aller à la semaine précédente, vendredi
+                if (currentWeekOffset > -10) {
+                    currentWeekOffset--;
+                    currentDayIndex = 4; // Vendredi
+                }
+            }
+            updateMobileView();
+        }
+
+        function nextDay() {
+            if (currentDayIndex < 4) {
+                currentDayIndex++;
+            } else {
+                // Aller à la semaine suivante, lundi
+                if (currentWeekOffset < 10) {
+                    currentWeekOffset++;
+                    currentDayIndex = 0; // Lundi
+                }
+            }
+            updateMobileView();
+        }
+
+        function getWeekStart(weekOffset = 0) {
+            const today = new Date();
+            const day = today.getDay();
+            const diff = today.getDate() - day + (day === 0 ? -6 : 1) + (weekOffset * 7);
+            const weekStart = new Date(today.setDate(diff));
+            weekStart.setHours(0, 0, 0, 0);
+            return weekStart;
+        }
+
+        function getEventsForWeek(weekOffset) {
+            const weekStart = getWeekStart(weekOffset);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            
+            return events.filter(event => {
+                const eventDate = new Date(event.start);
+                return eventDate >= weekStart && eventDate < weekEnd;
+            });
+        }
+
+        function getCourseType(title) {
+            const titleLower = title.toLowerCase();
+            if (titleLower.includes('cm ') || titleLower.startsWith('cm ')) return 'cm';
+            if (titleLower.includes('td ') || titleLower.startsWith('td ')) return 'td';
+            if (titleLower.includes('tp ') || titleLower.startsWith('tp ')) return 'tp';
+            if (titleLower.includes('portfolio')) return 'portfolio';
+            return 'default';
+        }
+
+        function createScheduleGrid(weekOffset) {
+            const weekEvents = getEventsForWeek(weekOffset);
+            const weekStart = getWeekStart(weekOffset);
+            
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            document.getElementById('weekTitle').textContent = 
+                `Semaine du ${weekStart.toLocaleDateString('fr-FR')} au ${weekEnd.toLocaleDateString('fr-FR')}`;
+
+            let html = '<div class="schedule-grid">';
+            
+            html += '<div class="time-column">';
+            html += '<div class="time-slot" style="height: 50px;"></div>'; // Header vide
+            timeSlots.forEach(time => {
+                html += `<div class="time-slot">${time}</div>`;
+            });
+            html += '</div>';
+            
+            weekDays.forEach((dayName, dayIndex) => {
+                const dayDate = new Date(weekStart);
+                dayDate.setDate(dayDate.getDate() + dayIndex);
+                
+                const dayEvents = weekEvents.filter(event => {
+                    const eventDate = new Date(event.start);
+                    return eventDate.toDateString() === dayDate.toDateString();
+                });
+                
+                html += '<div class="day-column">';
+                html += `<div class="day-header">${dayName}<br><small>${dayDate.getDate()}/${dayDate.getMonth() + 1}</small></div>`;
+                html += '<div class="day-grid">';
+                
+                for (let i = 1; i < timeSlots.length; i++) {
+                    html += `<div class="grid-line" style="top: ${i * 60}px;"></div>`;
+                }
+                
+                dayEvents.forEach(event => {
+                    const startDate = new Date(event.start.getTime() + timeOffset * 60 * 60 * 1000);
+                    const endDate = new Date(event.end.getTime() + timeOffset * 60 * 60 * 1000);
+                    
+                    const startHour = startDate.getHours();
+                    const startMinute = startDate.getMinutes();
+                    const endHour = endDate.getHours();
+                    const endMinute = endDate.getMinutes();
+                    
+                    const startPos = (startHour - 8) * 60 + startMinute;
+                    const duration = (endHour - startHour) * 60 + (endMinute - startMinute);
+                    
+                    if (startPos >= 0 && startPos < 780) {
+                        const courseType = getCourseType(event.title);
+                        
+                        html += `
+                            <div class="course ${courseType}" 
+                                 style="top: ${startPos}px; height: ${duration}px;"
+                                 title="${event.title}&#10;${startDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} - ${endDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}&#10;${event.location || ''}${event.professor ? '&#10;' + event.professor : ''}">
+                                <div class="course-title">${event.title}</div>
+                                <div class="course-info">
+                                    ${startDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} - ${endDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
+                                </div>
+                                ${event.location ? `<div class="course-location">${event.location}</div>` : ''}
+                            </div>
+                        `;
+                    }
+                });
+                
+                html += '</div></div>';
+            });
+            
+            html += '</div>';
+            
+            document.getElementById('scheduleGrid').innerHTML = html;
+        }
+
+        // Fonctions de navigation des semaines
+        window.previousWeek = function() {
+            if (currentWeekOffset > -10) {
+                currentWeekOffset--;
+                if (events.length > 0) {
+                    createScheduleGrid(currentWeekOffset);
+                    if (window.innerWidth <= 768) {
+                        updateMobileView();
+                    }
+                }
+            }
+        };
+
+        window.nextWeek = function() {
+            if (currentWeekOffset < 10) {
+                currentWeekOffset++;
+                if (events.length > 0) {
+                    createScheduleGrid(currentWeekOffset);
+                    if (window.innerWidth <= 768) {
+                        updateMobileView();
+                    }
+                }
+            }
+        };
+
+        window.showWeek = function(weekOffset) {
+            currentWeekOffset = weekOffset;
+            
+            if (events.length === 0) {
+                document.getElementById('scheduleGrid').innerHTML = `
+                    <div class="no-events">
+                        <h3>🔄 Chargement de votre emploi du temps...</h3>
+                        <p>Veuillez patienter pendant que nous récupérons vos cours.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            createScheduleGrid(weekOffset);
+
+            if (window.innerWidth <= 768) {
+                updateMobileView();
+            }
+        };
+
+        // Fonction principale de chargement
+        async function loadSchedule() {
+            showLoading();
+            
+            try {
+                const userEmail = localStorage.getItem('userEmail');
+                
+                if (!userEmail) {
+                    throw new Error('Veuillez vous connecter pour accéder à votre emploi du temps');
+                }
+
+                const calendarUrl = await getCalendarUrlFromFirebase(userEmail);
+                
+                if (!calendarUrl) {
+                    throw new Error('URL du calendrier non trouvée. Veuillez configurer votre calendrier depuis la page d\'accueil.');
+                }
+
+                currentCalendarUrl = calendarUrl;
+                await loadCalendarFromUrl(calendarUrl);
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        window.refreshSchedule = function() {
+            if (currentCalendarUrl) {
+                showLoading();
+                loadCalendarFromUrl(currentCalendarUrl).catch(error => {
+                    showError(error.message);
+                });
+            } else {
+                loadSchedule();
+            }
+        };
+
+        window.retryLoading = function() {
+            loadSchedule();
+        };
+
+        // Initialisation
+        async function init() {
+            console.log('📚 Emploi du Temps - Version mobile améliorée');
+            
+            initializeCurrentDate();
+            initSwipeGestures();
+            
+            await loadSchedule();
+            showWeek(0);
+
+            // Gestion du redimensionnement
+            window.addEventListener('resize', () => {
+                if (events.length > 0) {
+                    if (window.innerWidth <= 768) {
+                        updateMobileView();
+                    } else {
+                        showWeek(currentWeekOffset);
+                    }
+                }
+            });
+        }
+
+        init();
+        console.log('Cest ce script ou ya le bon truc !');
+    </script>
+</body>
+</html>
