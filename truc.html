@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -40,8 +41,28 @@
         }
 
         .header-info {
-            text-align: right;
-            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .controls {
@@ -50,45 +71,179 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 15px;
             flex-wrap: wrap;
         }
 
-        .btn {
-            padding: 8px 16px;
-            border: 1px solid #ddd;
-            background: white;
-            color: #2c3e50;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: 500;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
+.today-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
 
-        .btn:hover {
-            background: #ecf0f1;
-        }
+.today-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
+}
 
-        .btn.active {
-            background: #3498db;
+.export-btn {
+    background: linear-gradient(135deg, #6f42c1, #e83e8c);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
+}
+
+.export-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(111, 66, 193, 0.4);
+}
+
+        .nav-btn {
+            padding: 12px 24px;
+            border: none;
+            background: linear-gradient(135deg, #27ae60, #229954);
             color: white;
-            border-color: #3498db;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
+        }
+
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+
+        .nav-btn:disabled {
+            background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Navigation mobile avec swipe dans l'en-tête */
+        .mobile-nav {
+            display: none;
+        }
+
+        .mobile-day-header {
+            display: none;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 20px 15px;
+            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mobile-day-swipe {
+            position: relative;
+            text-align: center;
+            user-select: none;
+            cursor: grab;
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-day-swipe:active {
+            cursor: grabbing;
+        }
+
+        .current-day-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .current-day-date {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Indicateur de swipe pour mobile dans le calendrier */
+        .mobile-day-indicator {
+            display: none;
+            background: #ecf0f1;
+            padding: 10px 15px;
+            text-align: center;
+            border-bottom: 1px solid #bdc3c7;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .mobile-day-indicator:active {
+            cursor: grabbing;
+        }
+
+        .swipe-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+        }
+
+        .swipe-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .swipe-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .swipe-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        .week-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
         }
 
         .schedule-container {
             max-width: 1200px;
             margin: 20px auto;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
         .week-header {
-            background: #34495e;
+            background: linear-gradient(135deg, #34495e, #2c3e50);
             color: white;
-            padding: 15px 20px;
+            padding: 18px 25px;
             font-weight: 600;
             display: flex;
             justify-content: space-between;
@@ -99,42 +254,43 @@
             background: #27ae60;
             border: none;
             color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 10px 18px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 0.8rem;
-            transition: background 0.2s;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .refresh-btn:hover {
             background: #229954;
+            transform: translateY(-1px);
         }
 
-        .schedule-grid {
-            display: grid;
-            grid-template-columns: 80px repeat(5, 1fr);
-            min-height: 600px;
-        }
 
         .time-column {
-            background: #ecf0f1;
-            border-right: 1px solid #bdc3c7;
+            background: linear-gradient(180deg, #f8f9fa, #e9ecef);
+            border-right: 2px solid #dee2e6;
         }
 
         .time-slot {
             height: 60px;
-            border-bottom: 1px solid #bdc3c7;
+            border-bottom: 1px solid #dee2e6;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.85rem;
-            font-weight: 500;
-            color: #7f8c8d;
+            font-weight: 600;
+            color: #495057;
         }
 
         .day-column {
-            border-right: 1px solid #ecf0f1;
+            border-right: 1px solid #dee2e6;
             position: relative;
+            background: #fdfdfd;
         }
 
         .day-header {
@@ -159,51 +315,8 @@
             left: 0;
             right: 0;
             height: 1px;
-            background: #ecf0f1;
+            background: #f1f3f4;
         }
-
-        .course {
-            position: absolute;
-            left: 2px;
-            right: 2px;
-            border-radius: 4px;
-            padding: 6px 8px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .course:hover {
-            transform: scale(1.02);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            z-index: 10;
-        }
-
-        .course-title {
-            font-weight: 600;
-            margin-bottom: 2px;
-            line-height: 1.2;
-        }
-
-        .course-info {
-            font-size: 0.75rem;
-            opacity: 0.9;
-            line-height: 1.1;
-        }
-
-        .course-location {
-            margin-top: 2px;
-            font-weight: 500;
-        }
-
-        /* Couleurs des cours selon le type */
-        .course.cm { background: #e74c3c; color: white; }
-        .course.td { background: #f39c12; color: white; }
-        .course.tp { background: #27ae60; color: white; }
-        .course.portfolio { background: #9b59b6; color: white; }
-        .course.default { background: #3498db; color: white; }
 
         .loading {
             text-align: center;
@@ -213,7 +326,7 @@
 
         .spinner {
             border: 3px solid #f3f4f6;
-            border-top: 3px solid #3498db;
+            border-top: 3px solid #74b9ff;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -230,203 +343,184 @@
             text-align: center;
             padding: 40px;
             color: #e74c3c;
-            background: #fdf2f2;
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
             margin: 20px;
-            border-radius: 8px;
-            border: 1px solid #fecaca;
-        }
-
-        .url-input {
-            background: white;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 800px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .url-input label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .url-input input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-
-        .url-input button {
-            margin-top: 10px;
-            background: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .url-input button:hover {
-            background: #2980b9;
+            border-radius: 12px;
+            border: 2px solid #e17055;
         }
 
         .no-events {
             text-align: center;
             padding: 40px;
-            color: #7f8c8d;
+            color: #74b9ff;
             font-style: italic;
         }
 
-        .connection-status {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            margin-left: 10px;
-        }
-
-        .connection-status.proxy {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .connection-status.direct {
-            background: #d1edff;
-            color: #0c5460;
-        }
-
-        .connection-status.error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .connection-status.firebase {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .user-info {
-            background: white;
-            padding: 15px;
-            margin: 20px auto;
-            max-width: 800px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .user-email {
-            color: #3498db;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .fallback-input {
-            display: none;
-            margin-top: 15px;
-            padding: 15px;
-            background: #fff3cd;
-            border-radius: 6px;
-            border: 1px solid #ffeaa7;
-        }
-
         @media (max-width: 768px) {
-            .schedule-grid {
-                grid-template-columns: 60px repeat(5, 1fr);
-                font-size: 0.8rem;
+            .controls {
+                display: none;
             }
             
-            .time-slot {
-                height: 50px;
-                font-size: 0.7rem;
+            .mobile-nav {
+                display: block;
             }
+            
+            .mobile-day-header {
+                display: block;
+            }
+            
+            .mobile-day-indicator {
+                display: block;
+            }           
+            
+            
+           .time-slot {
+        height: 50px; /* remettre à 50px */
+        font-size: 0.75rem;
+        padding: 2px;
+    }
+
+       
             
             .day-header {
                 height: 40px;
-                font-size: 0.8rem;
+                font-size: 0.85rem;
+                padding: 5px;
             }
             
-            .course {
-                padding: 4px 6px;
-                font-size: 0.7rem;
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .header-info {
+                font-size: 0.85rem;
+                margin-top: 5px;
+            }
+            
+            .week-header {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .refresh-btn {
+                padding: 8px 14px;
+                font-size: 0.75rem;
+            }
+            
+            .loading, .error {
+                padding: 30px 20px;
+                margin: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .spinner {
+                width: 30px;
+                height: 30px;
+            }
+
+            .current-day-name {
+                font-size: 1.6rem;
+            }
+
+            .current-day-date {
+                font-size: 1rem;
+            }
+
+            .nav-btn {
+                padding: 10px 16px;
+                font-size: 0.8rem;
             }
         }
+
+        @media (max-width: 480px) {
+            
+            .time-slot {
+                font-size: 0.7rem;
+                height: 45px;
+            }
+            
+            .current-day-name {
+                font-size: 1.4rem;
+            }
+            
+            .current-day-date {
+                font-size: 0.95rem;
+            }
+        }
+
     </style>
+    <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Emploi du Temps</title>
+    <!-- FullCalendar -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
             <h1>📚 Emploi du Temps</h1>
             <div class="header-info">
-                <div>Université de Rouen</div>
-                <div>BUT Métiers du Multimédia</div>
-                <span id="connectionStatus" class="connection-status" style="display: none;"></span>
+                <a href="../" class="back-btn">🏠 Accueil</a>
+                <button class="back-btn" onclick="openCalendarSelector()">⚙️ Paramètres</button>
             </div>
         </div>
     </div>
 
-    <div class="user-info" id="userInfo" style="display: none;">
-        <div class="user-email" id="userEmail"></div>
-        <div style="font-size: 0.9rem; color: #7f8c8d;">
-            📅 Calendrier chargé automatiquement depuis Firebase
-        </div>
-        
-        <div class="fallback-input" id="fallbackInput">
-            <h4>⚠️ URL du calendrier non trouvée</h4>
-            <p style="margin: 10px 0;">Veuillez saisir manuellement l'URL de votre calendrier :</p>
-            <input type="url" id="manualUrl" placeholder="https://adecampus.univ-rouen.fr/jsp/custom/modules/plannings/anonymous_cal.jsp..." style="width: 100%; padding: 8px; margin: 5px 0;">
-            <button onclick="loadFromManualUrl()" style="background: #e67e22; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-                Charger le calendrier
-            </button>
-        </div>
-    </div>
-
+    <!-- Desktop: Navigation -->
     <div class="controls">
-        <button class="btn active" onclick="showWeek(0)">Semaine Actuelle</button>
-        <button class="btn" onclick="showWeek(1)">Semaine +1</button>
-        <button class="btn" onclick="showWeek(2)">Semaine +2</button>
-        <button class="btn" onclick="showWeek(3)">Semaine +3</button>
+        <button class="nav-btn" onclick="calendar.prev()">« Semaine précédente</button>
+        <button class="today-btn" onclick="calendar.today()">📅 Aujourd'hui</button>
+        <button class="nav-btn" onclick="calendar.next()">Semaine suivante »</button>
     </div>
 
-    <div class="schedule-container">
-        <div class="week-header">
-            <span id="weekTitle">Chargement...</span>
-            <button class="refresh-btn" onclick="refreshSchedule()">🔄 Actualiser</button>
+    <!-- Mobile: Swipe par jour -->
+    <div class="mobile-day-view" id="mobileDayView" style="display:none;">
+        <div class="mobile-day-header">
+            <button onclick="previousDay()">‹</button>
+            <span id="currentDayTitle">Lundi 2 Oct</span>
+            <button onclick="nextDay()">›</button>
         </div>
-        
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            <div>Chargement de l'emploi du temps...</div>
-            <div style="font-size: 0.8rem; color: #95a5a6; margin-top: 10px;">
-                Récupération des données depuis Firebase et ADE Campus...
+        <div class="mobile-day-indicator">
+            <div id="mobileDaySwipe">
+                <span class="swipe-indicator">← Glissez pour naviguer →</span>
             </div>
         </div>
-        
-        <div id="error" class="error" style="display: none;">
-            <h3>Erreur de chargement</h3>
-            <p id="errorMessage"></p>
-            <button onclick="retryLoading()" style="margin-top: 10px; background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
-                Réessayer
-            </button>
-        </div>
-        
-        <div id="scheduleGrid" style="display: none;">
-            <!-- La grille sera générée ici -->
+        <div id="mobileDayContent"></div>
+    </div>
+
+    <!-- Desktop: FullCalendar -->
+    <div id="fullcalendar-container">
+        <div id="fullcalendar"></div>
+    </div>
+
+    <!-- Loading & Errors -->
+    <div id="loading" class="loading" style="display:none;">
+        <div class="spinner"></div>
+        <div>Chargement de l'emploi du temps...</div>
+    </div>
+    
+    <div id="error" class="error" style="display:none;">
+        <h3>Erreur de chargement</h3>
+        <p id="errorMessage"></p>
+        <button onclick="retryLoading()">Réessayer</button>
+    </div>
+
+    <!-- Modal de sélection de calendrier -->
+    <div id="calendarSelectorModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:white; padding:30px 20px; border-radius:12px; max-width:350px; margin:auto; box-shadow:0 4px 20px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom:18px;">Choisir l'emploi du temps</h3>
+            <div id="calendarSelectorList"></div>
+            <button onclick="closeCalendarSelector()" style="margin-top:18px; background:#e74c3c; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Fermer</button>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
-        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
 
         // Configuration Firebase
         const firebaseConfig = {
@@ -439,498 +533,388 @@
             measurementId: "G-RFQETZ4WPC"
         };
 
-        // Initialiser Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
-        const analytics = getAnalytics(app);
 
         // Variables globales
-        let events = [];
-        let currentWeekOffset = 0;
-        let timeOffset = 0;
-        let currentCalendarUrl = null;
+        let calendar;
+        let allEvents = [];
+        let currentDayIndex = 0;
+        let isMobile = window.innerWidth <= 768;
 
-        // Heures de cours (8h-18h)
-        const timeSlots = [];
-        for (let h = 8; h <= 18; h++) {
-            timeSlots.push(`${h.toString().padStart(2, '0')}:00`);
+        // Swipe sur mobile
+        let startX = 0, startY = 0;
+
+        // ============= FIREBASE =============
+        async function getCalendarListFromFirebase(userEmail) {
+            const userDocRef = doc(db, 'users', userEmail);
+            const userDoc = await getDoc(userDocRef);
+            if (!userDoc.exists()) return [];
+            
+            const userData = userDoc.data();
+            return Object.keys(userData)
+                .filter(key => key.startsWith('calendarUrl'))
+                .map(key => ({
+                    key,
+                    nom: userData[key].Nom || `Emploi du temps ${key.replace('calendarUrl', '')}`,
+                    url: userData[key].Url
+                }))
+                .filter(cal => cal.url);
         }
 
-        // Jours de la semaine
-        const weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+        // ============= EXTRACTION PROF =============
+        function extractProfessor(description) {
+            if (!description) return "";
 
-        // Fonctions utilitaires
-        function updateConnectionStatus(status, message = '') {
-            const statusElement = document.getElementById('connectionStatus');
-            statusElement.style.display = 'inline-block';
+            const lines = description
+                .replace(/\\n/g, "\n")
+                .split(/\r?\n/)
+                .map(l => l.trim())
+                .filter(Boolean);
+
+            const blacklist = [
+                /^TD\b/i, /^TP\b/i, /^CM\b/i, /^Amphi\b/i, /^Rentr[ée]e\b/i,
+                /^BUT\b/i, /^Intégration\b/i, /^Portfolio\b/i,
+                /^\(Export[^\)]*\)$/i,
+                /^TD-?\d+/i, /^TP-?\d+/i, /^TD\d+-?[A-Z]?$/i, /^TP\d+-?[A-Z]?$/i
+            ];
+
+            const candidates = lines.filter(l => {
+                if (blacklist.some(re => re.test(l))) return false;
+                if (/[0-9]{2}:[0-9]{2}/.test(l)) return false;
+                return true;
+            });
+
+            const upperRe = /^(?=.*\s)[A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒ' \-]+$/;
+            const titleRe = /^([A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸ][a-zàâäçéèêëîïôöùûüÿœæ]+)(\s+[A-ZÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸ][a-zàâäçéèêëîïôöùûüÿœæ\-']+){1,3}$/;
+
+            let prof = candidates.find(l => upperRe.test(l));
+            if (!prof) prof = candidates.find(l => titleRe.test(l));
+            if (!prof) prof = candidates.find(l => l.split(/\s+/).length <= 4 && !/[,:()]/.test(l));
+
+            return prof || "";
+        }
+
+        // ============= COULEURS =============
+        function getEventColor(title) {
+            const titleLower = title.toLowerCase();
+            const colors = {
+                'intégration': '#4A90E2',
+                'développement web': '#F5A623',
+                'anglais': '#7ED321',
+                'expression': '#D0021B',
+                'ergonomie': '#9013FE',
+                'hébergement': '#FF6B35',
+                'ecriture': '#50E3C2',
+                'production graphique': '#FF1744',
+                'culture artistique': '#673AB7',
+                'stratégies': '#FF9800',
+                'représentation': '#00BCD4',
+                'culture numérique': '#4f7f86',
+                'production audio': '#9013FE',
+                'economie': '#FF6B35'
+            };
+
+            for (const [key, color] of Object.entries(colors)) {
+                if (titleLower.includes(key)) return color;
+            }
+
+            if (titleLower.includes('cm')) return '#ff7675';
+            if (titleLower.includes('td')) return '#fdcb6e';
+            if (titleLower.includes('tp')) return '#00b894';
+            if (titleLower.includes('portfolio')) return '#a29bfe';
+
+            return '#74b9ff';
+        }
+
+        // ============= FULLCALENDAR (Desktop) =============
+        function initFullCalendar(icalUrl) {
+            const calendarEl = document.getElementById('fullcalendar');
             
-            switch(status) {
-                case 'firebase':
-                    statusElement.textContent = 'Connecté à Firebase';
-                    statusElement.className = 'connection-status firebase';
-                    break;
-                case 'proxy':
-                    statusElement.textContent = 'Connexion proxy optimisée';
-                    statusElement.className = 'connection-status proxy';
-                    break;
-                case 'error':
-                    statusElement.textContent = message || 'Erreur de connexion';
-                    statusElement.className = 'connection-status error';
-                    break;
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                locale: 'fr',
+                firstDay: 1,
+                allDaySlot: false,
+                slotMinTime: '08:00:00',
+                slotMaxTime: '20:00:00',
+                weekends: false,
+                headerToolbar: {
+                    left: 'prev,today,next',
+                    center: 'title',
+                    right: ''
+                },
+                buttonText: {
+                    today: "Aujourd'hui",
+                    prev: "« Semaine préc.",
+                    next: "Semaine suiv. »"
+                },
+                events: [],
+                eventContent: function(arg) {
+                    const container = document.createElement('div');
+                    container.style.padding = '2px';
+                    
+                    const title = document.createElement('div');
+                    title.innerHTML = arg.event.title;
+                    title.style.fontWeight = '600';
+                    
+                    const prof = document.createElement('div');
+                    prof.innerHTML = arg.event.extendedProps.professor || "";
+                    prof.style.fontSize = '0.85em';
+                    prof.style.opacity = '0.9';
+                    
+                    const location = document.createElement('div');
+                    location.innerHTML = arg.event.extendedProps.location || "";
+                    location.style.fontSize = '0.8em';
+                    location.style.opacity = '0.8';
+                    
+                    container.appendChild(title);
+                    if (prof.innerHTML) container.appendChild(prof);
+                    if (location.innerHTML) container.appendChild(location);
+                    
+                    return { domNodes: [container] };
+                }
+            });
+
+            calendar.render();
+            loadEventsIntoCalendar(icalUrl);
+        }
+
+        // ============= CHARGEMENT EVENTS =============
+        async function loadEventsIntoCalendar(icalUrl) {
+            try {
+                const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(icalUrl);
+                const response = await fetch(proxyUrl);
+                const data = await response.text();
+                
+                const jcalData = ICAL.parse(data);
+                const comp = new ICAL.Component(jcalData);
+                const vevents = comp.getAllSubcomponents("vevent");
+
+                allEvents = [];
+                vevents.forEach((vevent) => {
+                    const event = new ICAL.Event(vevent);
+                    allEvents.push({
+                        title: event.summary,
+                        start: event.startDate.toJSDate(),
+                        end: event.endDate.toJSDate(),
+                        location: event.location,
+                        backgroundColor: getEventColor(event.summary),
+                        borderColor: getEventColor(event.summary),
+                        extendedProps: {
+                            professor: extractProfessor(event.description)
+                        }
+                    });
+                });
+
+                if (isMobile) {
+                    showMobileView();
+                } else {
+                    calendar.addEventSource(allEvents);
+                }
+                
+                hideLoading();
+            } catch (error) {
+                showError("Impossible de charger le calendrier : " + error.message);
             }
         }
 
-        function showError(message) {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('scheduleGrid').style.display = 'none';
-            document.getElementById('error').style.display = 'block';
-            document.getElementById('errorMessage').textContent = message;
-            updateConnectionStatus('error', 'Erreur');
+        // ============= VUE MOBILE (par jour avec swipe) =============
+        function showMobileView() {
+            document.getElementById('fullcalendar-container').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            document.getElementById('mobileDayView').style.display = 'block';
+            
+            const today = new Date();
+            const day = today.getDay();
+            currentDayIndex = (day === 0 || day === 6) ? 0 : day - 1;
+            
+            renderMobileDay();
+            initSwipeGestures();
         }
 
-        function hideError() {
-            document.getElementById('error').style.display = 'none';
+        function renderMobileDay() {
+            const weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
+            const today = new Date();
+            const currentWeekStart = getMonday(today);
+            const targetDate = new Date(currentWeekStart);
+            targetDate.setDate(targetDate.getDate() + currentDayIndex);
+
+            // Titre
+            const options = { weekday: 'long', day: 'numeric', month: 'short' };
+            document.getElementById('currentDayTitle').textContent = 
+                targetDate.toLocaleDateString('fr-FR', options);
+
+            // Events du jour
+            const dayEvents = allEvents.filter(event => {
+                const eventDate = new Date(event.start);
+                return eventDate.toDateString() === targetDate.toDateString();
+            }).sort((a, b) => a.start - b.start);
+
+            const container = document.getElementById('mobileDayContent');
+            container.innerHTML = '';
+
+            if (dayEvents.length === 0) {
+                container.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">Aucun cours ce jour-là 🎉</p>';
+                return;
+            }
+
+            dayEvents.forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.className = 'mobile-event';
+                eventDiv.style.borderLeft = `4px solid ${event.backgroundColor}`;
+                eventDiv.style.backgroundColor = event.backgroundColor + '15';
+                eventDiv.style.padding = '12px';
+                eventDiv.style.marginBottom = '10px';
+                eventDiv.style.borderRadius = '6px';
+
+                const timeStr = `${formatTime(event.start)} - ${formatTime(event.end)}`;
+                
+                eventDiv.innerHTML = `
+                    <div style="font-weight:600; margin-bottom:4px;">${event.title}</div>
+                    <div style="font-size:0.9em; opacity:0.8;">${timeStr}</div>
+                    ${event.extendedProps.professor ? `<div style="font-size:0.85em; opacity:0.7;">👤 ${event.extendedProps.professor}</div>` : ''}
+                    ${event.location ? `<div style="font-size:0.85em; opacity:0.7;">📍 ${event.location}</div>` : ''}
+                `;
+                
+                container.appendChild(eventDiv);
+            });
         }
 
+        function formatTime(date) {
+            return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getMonday(d) {
+            const date = new Date(d);
+            const day = date.getDay();
+            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(date.setDate(diff));
+        }
+
+        window.previousDay = function() {
+            currentDayIndex = (currentDayIndex - 1 + 5) % 5;
+            renderMobileDay();
+        };
+
+        window.nextDay = function() {
+            currentDayIndex = (currentDayIndex + 1) % 5;
+            renderMobileDay();
+        };
+
+        // ============= SWIPE GESTURES =============
+        function initSwipeGestures() {
+            const mobileView = document.getElementById('mobileDayView');
+            
+            mobileView.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+
+            mobileView.addEventListener('touchend', (e) => {
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                const diffX = startX - endX;
+                const diffY = startY - endY;
+
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                    if (diffX > 0) {
+                        window.nextDay();
+                    } else {
+                        window.previousDay();
+                    }
+                }
+            }, { passive: true });
+        }
+
+        // ============= UI HELPERS =============
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
-            document.getElementById('scheduleGrid').style.display = 'none';
-            hideError();
+            document.getElementById('error').style.display = 'none';
         }
 
         function hideLoading() {
             document.getElementById('loading').style.display = 'none';
-            document.getElementById('scheduleGrid').style.display = 'block';
         }
 
-        // Récupérer l'URL du calendrier depuis Firebase
-        async function getCalendarUrlFromFirebase(userEmail) {
-            try {
-                console.log(`🔍 Recherche de l'URL du calendrier pour ${userEmail}...`);
-                
-                const userDocRef = doc(db, 'users', userEmail);
-                const userDoc = await getDoc(userDocRef);
-                
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    const calendarUrl = userData.calendarUrl;
-                    
-                    if (calendarUrl) {
-                        console.log('✅ URL du calendrier trouvée dans Firebase');
-                        return calendarUrl;
-                    } else {
-                        console.log('⚠️ Aucune URL de calendrier trouvée pour cet utilisateur');
-                        return null;
-                    }
-                } else {
-                    console.log('⚠️ Aucun document utilisateur trouvé');
-                    return null;
-                }
-            } catch (error) {
-                console.error('❌ Erreur lors de la récupération depuis Firebase:', error);
-                throw error;
-            }
+        function showError(message) {
+            hideLoading();
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
         }
-
-        // Fonction pour parser iCal
-        function parseICalData(icalText) {
-            const events = [];
-            const lines = icalText.split(/\r?\n/).map(line => line.trim());
-            
-            let currentEvent = null;
-            
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
-                
-                // Gérer les lignes qui continuent (commencent par un espace)
-                while (i + 1 < lines.length && lines[i + 1].match(/^\s/)) {
-                    i++;
-                    line += lines[i].substring(1);
-                }
-                
-                if (line === 'BEGIN:VEVENT') {
-                    currentEvent = {};
-                } else if (line === 'END:VEVENT' && currentEvent) {
-                    if (currentEvent.start && currentEvent.end && currentEvent.title) {
-                        // Nettoyer le titre
-                        currentEvent.title = currentEvent.title
-                            .replace(/\\n/g, ' ')
-                            .replace(/\\,/g, ',')
-                            .replace(/\\;/g, ';')
-                            .replace(/\s+/g, ' ')
-                            .trim();
-                        
-                        events.push(currentEvent);
-                    }
-                    currentEvent = null;
-                } else if (currentEvent && line.includes(':')) {
-                    const colonIndex = line.indexOf(':');
-                    const key = line.substring(0, colonIndex);
-                    const value = line.substring(colonIndex + 1);
-                    
-                    if (key.startsWith('DTSTART')) {
-                        currentEvent.start = parseICalDate(value);
-                    } else if (key.startsWith('DTEND')) {
-                        currentEvent.end = parseICalDate(value);
-                    } else if (key === 'SUMMARY') {
-                        currentEvent.title = value;
-                    } else if (key === 'LOCATION') {
-                        currentEvent.location = value.replace(/\\n/g, ' ').replace(/\\,/g, ',').replace(/\\;/g, ';');
-                    } else if (key === 'DESCRIPTION') {
-                        const desc = value.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';');
-                        
-                        // Pour ADE Campus, le professeur peut être dans différents formats
-                        const profPatterns = [
-                            /(?:Enseignant|Professeur|Prof)[:\s]*([^\n\r]*)/i,
-                            /^([A-Z]+\s+[A-Z]+(?:\s+[A-Z]+)*)$/m,
-                            /\n([A-Z][A-Z\s]+[A-Z])(?:\n|$)/
-                        ];
-                        
-                        for (const pattern of profPatterns) {
-                            const match = desc.match(pattern);
-                            if (match && match[1]) {
-                                currentEvent.professor = match[1].trim();
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            
-            return events;
-        }
-
-        function parseICalDate(dateStr) {
-            let originalDateStr = dateStr;
-            let cleanDate = dateStr;
-            
-            // Gérer les paramètres de fuseau horaire
-            if (cleanDate.includes(';')) {
-                cleanDate = cleanDate.split(';')[0];
-            }
-            
-            // Nettoyer la chaîne
-            cleanDate = cleanDate.replace(/[TZ]/g, '');
-            
-            const year = cleanDate.substr(0, 4);
-            const month = cleanDate.substr(4, 2);
-            const day = cleanDate.substr(6, 2);
-            const hour = cleanDate.substr(8, 2) || '00';
-            const minute = cleanDate.substr(10, 2) || '00';
-            
-            // Créer la date de base
-            let date = new Date(`${year}-${month}-${day}T${hour}:${minute}:00`);
-            
-            // Si la date se termine par Z (UTC), on ajoute 1h ou 2h selon la saison
-            if (originalDateStr.endsWith('Z')) {
-                const testDate = new Date(date);
-                const jan = new Date(testDate.getFullYear(), 0, 1);
-                const jul = new Date(testDate.getFullYear(), 6, 1);
-                const stdOffset = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
-                const isDST = testDate.getTimezoneOffset() < stdOffset;
-                
-                // Ajuster selon l'heure française (UTC+1 en hiver, UTC+2 en été)
-                const offset = isDST ? 2 : 1;
-                date = new Date(date.getTime() + offset * 60 * 60 * 1000);
-            }
-            
-            return date;
-        }
-
-        // Charger le calendrier depuis une URL
-        async function loadCalendarFromUrl(url) {
-            console.log('🔄 Chargement du calendrier depuis:', url);
-
-            const proxies = [
-                'https://corsproxy.io/?',
-                'https://api.allorigins.win/raw?url=',
-                'https://proxy.cors.sh/',
-            ];
-
-            let lastError = null;
-
-            for (let i = 0; i < proxies.length; i++) {
-                try {
-                    const proxyUrl = `${proxies[i]}${encodeURIComponent(url)}`;
-                    console.log(`🔄 Tentative ${i + 1}/${proxies.length} avec ${proxies[i].split('//')[1].split('/')[0]}...`);
-                    
-                    const response = await fetch(proxyUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'text/calendar,text/plain,*/*',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
-                    
-                    const icalData = await response.text();
-                    
-                    if (!icalData || icalData.length < 100) {
-                        throw new Error('Réponse vide ou trop courte');
-                    }
-                    
-                    if (!icalData.includes('BEGIN:VCALENDAR')) {
-                        throw new Error('Format iCal invalide');
-                    }
-                    
-                    // Succès !
-                    events = parseICalData(icalData);
-                    console.log(`✅ Connexion réussie via ${proxies[i].split('//')[1].split('/')[0]}`);
-                    console.log(`📅 ${events.length} événements chargés avec succès`);
-                    
-                    if (events.length === 0) {
-                        throw new Error('Aucun événement trouvé dans le calendrier');
-                    }
-                    
-                    updateConnectionStatus('proxy');
-                    hideLoading();
-                    showWeek(0);
-                    return true;
-                    
-                } catch (error) {
-                    lastError = error;
-                    console.log(`❌ Échec proxy ${i + 1}: ${error.message}`);
-                    
-                    if (i < proxies.length - 1) {
-                        continue;
-                    }
-                }
-            }
-            
-            throw new Error(`Impossible de charger le calendrier: ${lastError?.message || 'Erreur inconnue'}`);
-        }
-
-        // Charger depuis URL manuelle
-        window.loadFromManualUrl = async function() {
-            const url = document.getElementById('manualUrl').value.trim();
-            if (!url) {
-                alert('Veuillez saisir une URL valide');
-                return;
-            }
-
-            showLoading();
-            try {
-                await loadCalendarFromUrl(url);
-                currentCalendarUrl = url;
-                console.log('✅ Calendrier chargé depuis URL manuelle');
-            } catch (error) {
-                showError(error.message);
-            }
-        };
-
-        // Fonction principale de chargement
-        async function loadSchedule() {
-            showLoading();
-            
-            try {
-                // Récupérer l'email depuis localStorage
-                const userEmail = localStorage.getItem('userEmail');
-                
-                if (!userEmail) {
-                    throw new Error('Aucun utilisateur connecté (userEmail non trouvé dans localStorage)');
-                }
-
-                console.log(`👤 Utilisateur connecté: ${userEmail}`);
-                
-                // Afficher les infos utilisateur
-                document.getElementById('userInfo').style.display = 'block';
-                document.getElementById('userEmail').textContent = `📧 ${userEmail}`;
-                
-                // Récupérer l'URL du calendrier depuis Firebase
-                const calendarUrl = await getCalendarUrlFromFirebase(userEmail);
-                
-                if (!calendarUrl) {
-                    // Afficher l'input de fallback
-                    document.getElementById('fallbackInput').style.display = 'block';
-                    hideLoading();
-                    updateConnectionStatus('error', 'URL non trouvée');
-                    return;
-                }
-
-                currentCalendarUrl = calendarUrl;
-                updateConnectionStatus('firebase');
-                
-                // Charger le calendrier
-                await loadCalendarFromUrl(calendarUrl);
-                
-            } catch (error) {
-                console.error('❌ Erreur lors du chargement:', error);
-                showError(error.message);
-            }
-        }
-
-        // Fonctions d'affichage du calendrier
-        function getWeekStart(weekOffset = 0) {
-            const today = new Date();
-            const day = today.getDay();
-            const diff = today.getDate() - day + (day === 0 ? -6 : 1) + (weekOffset * 7);
-            const weekStart = new Date(today.setDate(diff));
-            weekStart.setHours(0, 0, 0, 0);
-            return weekStart;
-        }
-
-        function getEventsForWeek(weekOffset) {
-            const weekStart = getWeekStart(weekOffset);
-            const weekEnd = new Date(weekStart);
-            weekEnd.setDate(weekEnd.getDate() + 7);
-            
-            return events.filter(event => {
-                const eventDate = new Date(event.start);
-                return eventDate >= weekStart && eventDate < weekEnd;
-            });
-        }
-
-        function getCourseType(title) {
-            const titleLower = title.toLowerCase();
-            if (titleLower.includes('cm ') || titleLower.startsWith('cm ')) return 'cm';
-            if (titleLower.includes('td ') || titleLower.startsWith('td ')) return 'td';
-            if (titleLower.includes('tp ') || titleLower.startsWith('tp ')) return 'tp';
-            if (titleLower.includes('portfolio')) return 'portfolio';
-            return 'default';
-        }
-
-        function createScheduleGrid(weekOffset) {
-            const weekEvents = getEventsForWeek(weekOffset);
-            const weekStart = getWeekStart(weekOffset);
-            
-            // Titre de la semaine
-            const weekEnd = new Date(weekStart);
-            weekEnd.setDate(weekEnd.getDate() + 6);
-            document.getElementById('weekTitle').textContent = 
-                `Semaine du ${weekStart.toLocaleDateString('fr-FR')} au ${weekEnd.toLocaleDateString('fr-FR')}`;
-
-            let html = '<div class="schedule-grid">';
-            
-            // Colonne des heures
-            html += '<div class="time-column">';
-            html += '<div class="time-slot" style="height: 50px;"></div>'; // Header vide
-            timeSlots.forEach(time => {
-                html += `<div class="time-slot">${time}</div>`;
-            });
-            html += '</div>';
-            
-            // Colonnes des jours
-            weekDays.forEach((dayName, dayIndex) => {
-                const dayDate = new Date(weekStart);
-                dayDate.setDate(dayDate.getDate() + dayIndex);
-                
-                const dayEvents = weekEvents.filter(event => {
-                    const eventDate = new Date(event.start);
-                    return eventDate.toDateString() === dayDate.toDateString();
-                });
-                
-                html += '<div class="day-column">';
-                html += `<div class="day-header">${dayName}<br><small>${dayDate.getDate()}/${dayDate.getMonth() + 1}</small></div>`;
-                html += '<div class="day-grid">';
-                
-                // Lignes de grille
-                for (let i = 1; i < timeSlots.length; i++) {
-                    html += `<div class="grid-line" style="top: ${i * 60}px;"></div>`;
-                }
-                
-                // Événements
-                dayEvents.forEach(event => {
-                    const startDate = new Date(event.start.getTime() + timeOffset * 60 * 60 * 1000);
-                    const endDate = new Date(event.end.getTime() + timeOffset * 60 * 60 * 1000);
-                    
-                    const startHour = startDate.getHours();
-                    const startMinute = startDate.getMinutes();
-                    const endHour = endDate.getHours();
-                    const endMinute = endDate.getMinutes();
-                    
-                    // Calculer la position et la hauteur
-                    const startPos = (startHour - 8) * 60 + startMinute;
-                    const duration = (endHour - startHour) * 60 + (endMinute - startMinute);
-                    
-                    if (startPos >= 0 && startPos < 600) { // Entre 8h et 18h
-                        const courseType = getCourseType(event.title);
-                        
-                        html += `
-                            <div class="course ${courseType}" 
-                                 style="top: ${startPos}px; height: ${duration}px;"
-                                 title="${event.title}&#10;${startDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} - ${endDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}&#10;${event.location || ''}${event.professor ? '&#10;' + event.professor : ''}">
-                                <div class="course-title">${event.title}</div>
-                                <div class="course-info">
-                                    ${startDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})} - ${endDate.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}
-                                </div>
-                                ${event.location ? `<div class="course-location">${event.location}</div>` : ''}
-                            </div>
-                        `;
-                    }
-                });
-                
-                html += '</div></div>';
-            });
-            
-            html += '</div>';
-            
-            document.getElementById('scheduleGrid').innerHTML = html;
-        }
-
-        window.showWeek = function(weekOffset) {
-            currentWeekOffset = weekOffset;
-            
-            // Mettre à jour les boutons
-            document.querySelectorAll('.btn').forEach((btn, index) => {
-                btn.classList.toggle('active', index === weekOffset);
-            });
-            
-            if (events.length === 0) {
-                document.getElementById('scheduleGrid').innerHTML = `
-                    <div class="no-events">
-                        <h3>🔄 Chargement de votre emploi du temps...</h3>
-                        <p>Veuillez patienter pendant que nous récupérons vos cours.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            createScheduleGrid(weekOffset);
-        };
-
-        window.refreshSchedule = function() {
-            if (currentCalendarUrl) {
-                showLoading();
-                loadCalendarFromUrl(currentCalendarUrl).catch(error => {
-                    showError(error.message);
-                });
-            } else {
-                loadSchedule();
-            }
-        };
 
         window.retryLoading = function() {
             loadSchedule();
         };
 
-        // Initialisation
-        async function init() {
-            console.log('📚 Emploi du Temps - Université de Rouen');
-            console.log('🔥 Version avec intégration Firebase');
-            console.log('🔧 Proxies disponibles: corsproxy.io, allorigins.win, cors.sh');
-            
-            // Vérifier si on a un utilisateur dans localStorage
+        // ============= MODAL SELECTION CALENDRIER =============
+        window.openCalendarSelector = async function() {
             const userEmail = localStorage.getItem('userEmail');
+            if (!userEmail) return alert('Connectez-vous d\'abord !');
             
-            if (userEmail) {
-                console.log(`👤 Utilisateur trouvé: ${userEmail}`);
-                console.log('🚀 Chargement automatique de l\'emploi du temps...');
-                await loadSchedule();
-            } else {
-                console.log('⚠️ Aucun utilisateur trouvé dans localStorage');
-                showError('Aucun utilisateur connecté. Veuillez vous connecter d\'abord.');
+            const calendars = await getCalendarListFromFirebase(userEmail);
+            if (!calendars.length) return alert('Aucun emploi du temps trouvé.');
+
+            const selectedUrl = localStorage.getItem('selectedCalendarUrl') || calendars[0].url;
+            let html = '';
+            
+            calendars.forEach((cal, i) => {
+                html += `<div style="margin-bottom:10px;">
+                    <input type="radio" name="calendarUrl" id="calendarUrl${i}" value="${cal.url}" 
+                           ${cal.url === selectedUrl ? 'checked' : ''} 
+                           onchange="selectCalendarUrl('${cal.url}')">
+                    <label for="calendarUrl${i}" style="font-weight:600; margin-left:8px; cursor:pointer;">${cal.nom}</label>
+                </div>`;
+            });
+            
+            document.getElementById('calendarSelectorList').innerHTML = html;
+            document.getElementById('calendarSelectorModal').style.display = 'flex';
+        };
+
+        window.closeCalendarSelector = function() {
+            document.getElementById('calendarSelectorModal').style.display = 'none';
+        };
+
+        window.selectCalendarUrl = function(url) {
+            localStorage.setItem('selectedCalendarUrl', url);
+            closeCalendarSelector();
+            loadSchedule();
+        };
+
+        // ============= CHARGEMENT INITIAL =============
+        async function loadSchedule() {
+            showLoading();
+            try {
+                const userEmail = localStorage.getItem('userEmail');
+                if (!userEmail) throw new Error('Veuillez vous connecter');
+                
+                const calendars = await getCalendarListFromFirebase(userEmail);
+                if (!calendars.length) throw new Error('Aucun emploi du temps trouvé');
+                
+                const selectedUrl = localStorage.getItem('selectedCalendarUrl') || calendars[0].url;
+                
+                if (!isMobile) {
+                    initFullCalendar(selectedUrl);
+                } else {
+                    await loadEventsIntoCalendar(selectedUrl);
+                }
+            } catch (error) {
+                showError(error.message);
             }
-            
-            // Afficher la semaine actuelle par défaut
-            showWeek(0);
         }
 
-        // Démarrer l'application
-        init();
+        // ============= DETECTION RESPONSIVE =============
+        window.addEventListener('resize', () => {
+            const wasMobile = isMobile;
+            isMobile = window.innerWidth <= 768;
+            
+            if (wasMobile !== isMobile) {
+                location.reload(); // Recharger si changement mobile/desktop
+            }
+        });
+
+        // ============= INIT =============
+        loadSchedule();
     </script>
 </body>
 </html>
