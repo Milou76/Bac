@@ -585,7 +585,20 @@ function handleTouchEnd(e) {
     touchStartX = null;
     touchEndX = null;
 }
-
+function updateSwipeDots() {
+    const dots = document.querySelectorAll('.swipe-dot');
+    dots.forEach(dot => dot.classList.remove('active'));
+    // Active le dot du jour (exemple : jeudi = 4e jour, donc dot[1])
+    if (calendar && calendar.view && calendar.view.currentStart) {
+        const dayIndex = calendar.view.currentStart.getDay();
+        const dotIndex = dayIndex % dots.length;
+        if (dots[dotIndex]) dots[dotIndex].classList.add('active');
+    } else {
+        dots[1].classList.add('active');
+    }
+}
+window.addEventListener('resize', updateSwipeDots);
+window.addEventListener('DOMContentLoaded', updateSwipeDots);
 document.getElementById('fullcalendar').addEventListener('touchstart', handleTouchStart, { passive: true });
 document.getElementById('fullcalendar').addEventListener('touchend', handleTouchEnd, { passive: true });
 window.addEventListener('resize', updateSwipeIndicator);
