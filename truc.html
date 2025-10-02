@@ -599,8 +599,8 @@ function updateSwipeDots() {
 }
 window.addEventListener('resize', updateSwipeDots);
 window.addEventListener('DOMContentLoaded', updateSwipeDots);
-document.getElementById('fullcalendar').addEventListener('touchstart', handleTouchStart, { passive: true });
-document.getElementById('fullcalendar').addEventListener('touchend', handleTouchEnd, { passive: true });
+document.getElementById('swipeIndicator').addEventListener('touchstart', handleTouchStart, { passive: true });
+document.getElementById('swipeIndicator').addEventListener('touchend', handleTouchEnd, { passive: true });
 window.addEventListener('resize', updateSwipeIndicator);
 window.addEventListener('DOMContentLoaded', updateSwipeIndicator);
 window.addEventListener('resize', updateMobileDayNav);
