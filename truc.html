@@ -56,6 +56,8 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
+            border: none;
+            cursor: pointer;
         }
 
         .back-btn:hover {
@@ -64,51 +66,38 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .controls {
+        .export-btn {
+            background: linear-gradient(135deg, #6f42c1, #e83e8c);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(111, 66, 193, 0.4);
+        }
+
+        /* Navigation au-dessus du calendrier */
+        .calendar-navigation {
+            max-width: 1200px;
+            margin: 20px auto 0;
             background: white;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 15px;
             flex-wrap: wrap;
         }
-
-.today-btn {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
-}
-
-.today-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
-}
-
-.export-btn {
-    background: linear-gradient(135deg, #6f42c1, #e83e8c);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
-}
-
-.export-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(111, 66, 193, 0.4);
-}
 
         .nav-btn {
             padding: 12px 24px;
@@ -126,8 +115,8 @@
         }
 
         .nav-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
         }
 
         .nav-btn:active {
@@ -141,180 +130,92 @@
             box-shadow: none;
         }
 
-        /* Navigation mobile avec swipe dans l'en-tête */
-        .mobile-nav {
-            display: none;
-        }
-
-        .mobile-day-header {
-            display: none;
-            background: linear-gradient(135deg, #3498db, #2980b9);
+        .today-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
             color: white;
-            padding: 20px 15px;
-            box-shadow: 0 2px 5px rgba(52, 152, 219, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .mobile-day-swipe {
-            position: relative;
-            text-align: center;
-            user-select: none;
-            cursor: grab;
-            transition: transform 0.3s ease;
-        }
-
-        .mobile-day-swipe:active {
-            cursor: grabbing;
-        }
-
-        .current-day-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .current-day-date {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            font-weight: 500;
-        }
-
-        /* Indicateur de swipe pour mobile dans le calendrier */
-        .mobile-day-indicator {
-            display: none;
-            background: #ecf0f1;
-            padding: 10px 15px;
-            text-align: center;
-            border-bottom: 1px solid #bdc3c7;
-            cursor: grab;
-            user-select: none;
-        }
-
-        .mobile-day-indicator:active {
-            cursor: grabbing;
-        }
-
-        .swipe-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 0.75rem;
-            color: #7f8c8d;
-        }
-
-        .swipe-dots {
-            display: flex;
-            gap: 4px;
-        }
-
-        .swipe-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
         }
 
-        .swipe-dot.active {
-            background: white;
-            transform: scale(1.2);
-        }
-
-        .week-navigation {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
+        .today-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
         }
 
         .schedule-container {
             max-width: 1200px;
-            margin: 20px auto;
+            margin: 0 auto 20px;
             background: white;
-            border-radius: 12px;
+            border-radius: 0 0 12px 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
-        .week-header {
-            background: linear-gradient(135deg, #34495e, #2c3e50);
-            color: white;
-            padding: 18px 25px;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        #fullcalendar-container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .refresh-btn {
-            background: #27ae60;
-            border: none;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 6px;
+        #fullcalendar {
+            padding: 20px;
+        }
+
+        /* Customisation FullCalendar */
+        .fc-toolbar {
+            display: none !important; /* On cache la toolbar par défaut */
+        }
+
+        .fc-col-header-cell {
+            background: #3498db !important;
+            color: white !important;
+            border: none !important;
+            padding: 15px 8px !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+        }
+
+        .fc-timegrid-slot {
+            height: 60px !important;
+            border-color: #dee2e6 !important;
+        }
+
+        .fc-timegrid-axis {
+            background: linear-gradient(180deg, #f8f9fa, #e9ecef) !important;
+            font-weight: 600 !important;
+            color: #495057 !important;
+            border-right: 2px solid #dee2e6 !important;
+        }
+
+        .fc-event {
+            border-radius: 6px !important;
+            border-left-width: 4px !important;
+            padding: 4px 6px !important;
+            transition: all 0.2s ease !important;
             cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
-        .refresh-btn:hover {
-            background: #229954;
-            transform: translateY(-1px);
+        .fc-event:hover {
+            transform: translateX(2px) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
         }
 
-
-        .time-column {
-            background: linear-gradient(180deg, #f8f9fa, #e9ecef);
-            border-right: 2px solid #dee2e6;
+        .fc-day-today {
+            background: rgba(52, 152, 219, 0.08) !important;
         }
 
-        .time-slot {
-            height: 60px;
-            border-bottom: 1px solid #dee2e6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #495057;
+        .fc-scrollgrid {
+            border: none !important;
         }
 
-        .day-column {
-            border-right: 1px solid #dee2e6;
-            position: relative;
-            background: #fdfdfd;
-        }
-
-        .day-header {
-            height: 50px;
-            background: #3498db;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-            border-bottom: 1px solid #2980b9;
-        }
-
-        .day-grid {
-            position: relative;
-            height: calc(100% - 50px);
-        }
-
-        .grid-line {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #f1f3f4;
+        .fc-theme-standard td,
+        .fc-theme-standard th {
+            border-color: #dee2e6 !important;
         }
 
         .loading {
@@ -348,130 +249,172 @@
             border: 2px solid #e17055;
         }
 
-        .no-events {
-            text-align: center;
-            padding: 40px;
-            color: #74b9ff;
-            font-style: italic;
+        .error button {
+            margin-top: 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #calendarSelectorModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #calendarSelectorModal > div {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            max-width: 350px;
+            margin: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        #calendarSelectorModal h3 {
+            margin-bottom: 18px;
+            color: #2c3e50;
+            font-size: 1.3rem;
+        }
+
+        #calendarSelectorModal input[type="radio"] {
+            accent-color: #3498db;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        #calendarSelectorModal label {
+            font-weight: 600;
+            margin-left: 8px;
+            cursor: pointer;
+            color: #2c3e50;
+        }
+
+        #calendarSelectorModal > div > div {
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+
+        #calendarSelectorModal button {
+            margin-top: 18px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
         }
 
         @media (max-width: 768px) {
-            .controls {
-                display: none;
-            }
-            
-            .mobile-nav {
-                display: block;
-            }
-            
-            .mobile-day-header {
-                display: block;
-            }
-            
-            .mobile-day-indicator {
-                display: block;
-            }           
-            
-            
-           .time-slot {
-        height: 50px; /* remettre à 50px */
-        font-size: 0.75rem;
-        padding: 2px;
-    }
-
-       
-            
-            .day-header {
-                height: 40px;
-                font-size: 0.85rem;
-                padding: 5px;
-            }
-            
             .header h1 {
                 font-size: 1.4rem;
             }
-            
+
             .header-info {
                 font-size: 0.85rem;
-                margin-top: 5px;
-            }
-            
-            .week-header {
-                padding: 12px 15px;
-                font-size: 0.9rem;
-            }
-            
-            .refresh-btn {
-                padding: 8px 14px;
-                font-size: 0.75rem;
-            }
-            
-            .loading, .error {
-                padding: 30px 20px;
-                margin: 15px;
-                font-size: 0.9rem;
-            }
-            
-            .spinner {
-                width: 30px;
-                height: 30px;
+                margin-top: 10px;
+                width: 100%;
+                justify-content: center;
             }
 
-            .current-day-name {
-                font-size: 1.6rem;
-            }
-
-            .current-day-date {
-                font-size: 1rem;
+            .calendar-navigation {
+                padding: 15px 10px;
+                margin: 15px auto 0;
             }
 
             .nav-btn {
                 padding: 10px 16px;
-                font-size: 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .today-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            #fullcalendar {
+                padding: 10px;
+            }
+
+            .fc-col-header-cell {
+                padding: 12px 4px !important;
+                font-size: 0.75rem !important;
+            }
+
+            .fc-timegrid-slot {
+                height: 50px !important;
             }
         }
 
         @media (max-width: 480px) {
-            
-            .time-slot {
-                font-size: 0.7rem;
-                height: 45px;
+            .nav-btn {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+                gap: 4px;
             }
-            
-            .current-day-name {
-                font-size: 1.4rem;
+
+            .today-btn {
+                padding: 8px 16px;
+                font-size: 0.85rem;
             }
-            
-            .current-day-date {
-                font-size: 0.95rem;
+
+            .calendar-navigation {
+                gap: 8px;
             }
         }
-
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
-    <!-- html2canvas pour l'export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
             <h1>📚 Emploi du Temps</h1>
-            <div class="header-controls">
+            <div class="header-info">
                 <a href="../" class="back-btn">🏠 Accueil</a>
                 <button class="back-btn" onclick="openCalendarSelector()">⚙️ Paramètres</button>
-                <button class="export-btn" onclick="exportCalendar()">📸 Exporter</button>
+                
             </div>
         </div>
     </div>
 
-    <!-- FullCalendar -->
-    <!-- FullCalendar -->
-    <div id="fullcalendar-container">
-        <div id="fullcalendar"></div>
+    <!-- Navigation au-dessus du calendrier -->
+    <div class="calendar-navigation" id="calendarNav">
+        <button class="nav-btn" onclick="navigatePrevWeek()">
+            ← Semaine précédente
+        </button>
+        <button class="today-btn" onclick="navigateToday()">
+            📅 Aujourd'hui
+        </button>
+        <button class="nav-btn" onclick="navigateNextWeek()">
+            Semaine suivante →
+        </button>
+        <button class="export-btn" onclick="exportCalendar()">📸 Exporter</button>
     </div>
 
-    <!-- Loading & Errors -->
+    <div id="fullcalendar-container">
+        <div class="schedule-container">
+            <div id="fullcalendar"></div>
+        </div>
+    </div>
+
     <div id="loading" class="loading" style="display:none;">
         <div class="spinner"></div>
         <div>Chargement de l'emploi du temps...</div>
@@ -483,12 +426,11 @@
         <button onclick="retryLoading()">Réessayer</button>
     </div>
 
-    <!-- Modal de sélection de calendrier -->
-    <div id="calendarSelectorModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); z-index:9999; align-items:center; justify-content:center;">
-        <div style="background:white; padding:30px 20px; border-radius:12px; max-width:350px; margin:auto; box-shadow:0 4px 20px rgba(0,0,0,0.2);">
-            <h3 style="margin-bottom:18px;">Choisir l'emploi du temps</h3>
+    <div id="calendarSelectorModal">
+        <div>
+            <h3>Choisir l'emploi du temps</h3>
             <div id="calendarSelectorList"></div>
-            <button onclick="closeCalendarSelector()" style="margin-top:18px; background:#e74c3c; color:white; border:none; padding:8px 16px; border-radius:6px; cursor:pointer;">Fermer</button>
+            <button onclick="closeCalendarSelector()">Fermer</button>
         </div>
     </div>
 
@@ -496,7 +438,6 @@
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
         import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
 
-        // Configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyD686OpBhCtAgc5ErMi4IO3mgdEFZfGWAM",
             authDomain: "moncalendrierpersonnel.firebaseapp.com",
@@ -510,12 +451,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Variables globales
         let calendar;
         let allEvents = [];
         let isMobile = window.innerWidth <= 768;
 
-        // ============= FIREBASE =============
         async function getCalendarListFromFirebase(userEmail) {
             const userDocRef = doc(db, 'users', userEmail);
             const userDoc = await getDoc(userDocRef);
@@ -532,10 +471,8 @@
                 .filter(cal => cal.url);
         }
 
-        // ============= EXTRACTION PROF =============
         function extractProfessor(description) {
             if (!description) return "";
-
             const lines = description
                 .replace(/\\n/g, "\n")
                 .split(/\r?\n/)
@@ -565,7 +502,6 @@
             return prof || "";
         }
 
-        // ============= COULEURS =============
         function getEventColor(title) {
             const titleLower = title.toLowerCase();
             const colors = {
@@ -597,7 +533,6 @@
             return '#74b9ff';
         }
 
-        // ============= FULLCALENDAR =============
         function initFullCalendar(icalUrl) {
             const calendarEl = document.getElementById('fullcalendar');
             
@@ -609,18 +544,7 @@
                 slotMinTime: '08:00:00',
                 slotMaxTime: '20:00:00',
                 weekends: false,
-                headerToolbar: {
-                    left: 'prev,today,next',
-                    center: 'title',
-                    right: isMobile ? '' : 'timeGridWeek,timeGridDay'
-                },
-                buttonText: {
-                    today: "Aujourd'hui",
-                    prev: "‹",
-                    next: "›",
-                    week: "Semaine",
-                    day: "Jour"
-                },
+                headerToolbar: false, // On désactive la toolbar native
                 events: [],
                 eventContent: function(arg) {
                     const container = document.createElement('div');
@@ -652,7 +576,6 @@
             loadEventsIntoCalendar(icalUrl);
         }
 
-        // ============= CHARGEMENT EVENTS =============
         async function loadEventsIntoCalendar(icalUrl) {
             try {
                 const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(icalUrl);
@@ -686,7 +609,25 @@
             }
         }
 
-        // ============= EXPORT PNG/JPG =============
+        // Navigation functions
+        window.navigatePrevWeek = function() {
+            if (calendar) {
+                calendar.prev();
+            }
+        };
+
+        window.navigateToday = function() {
+            if (calendar) {
+                calendar.today();
+            }
+        };
+
+        window.navigateNextWeek = function() {
+            if (calendar) {
+                calendar.next();
+            }
+        };
+
         window.exportCalendar = async function() {
             const btn = document.querySelector('.export-btn');
             const originalText = btn.textContent;
@@ -695,8 +636,6 @@
 
             try {
                 const calendarEl = document.getElementById('fullcalendar');
-                
-                // Capturer le calendrier
                 const canvas = await html2canvas(calendarEl, {
                     backgroundColor: '#ffffff',
                     scale: 2,
@@ -704,7 +643,6 @@
                     useCORS: true
                 });
 
-                // Convertir en blob
                 canvas.toBlob((blob) => {
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
@@ -731,25 +669,15 @@
             }
         };
 
-        function formatTime(date) {
-            return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        }
-
-        function getMonday(d) {
-            const date = new Date(d);
-            const day = date.getDay();
-            const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-            return new Date(date.setDate(diff));
-        }
-
-        // ============= UI HELPERS =============
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('error').style.display = 'none';
+            document.getElementById('calendarNav').style.display = 'none';
         }
 
         function hideLoading() {
             document.getElementById('loading').style.display = 'none';
+            document.getElementById('calendarNav').style.display = 'flex';
         }
 
         function showError(message) {
@@ -762,23 +690,22 @@
             loadSchedule();
         };
 
-        // ============= MODAL SELECTION CALENDRIER =============
         window.openCalendarSelector = async function() {
-            const userEmail = localStorage.getItem('userEmail');
+            const userEmail = window.localStorage.getItem('userEmail');
             if (!userEmail) return alert('Connectez-vous d\'abord !');
             
             const calendars = await getCalendarListFromFirebase(userEmail);
             if (!calendars.length) return alert('Aucun emploi du temps trouvé.');
 
-            const selectedUrl = localStorage.getItem('selectedCalendarUrl') || calendars[0].url;
+            const selectedUrl = window.localStorage.getItem('selectedCalendarUrl') || calendars[0].url;
             let html = '';
             
             calendars.forEach((cal, i) => {
-                html += `<div style="margin-bottom:10px;">
+                html += `<div>
                     <input type="radio" name="calendarUrl" id="calendarUrl${i}" value="${cal.url}" 
                            ${cal.url === selectedUrl ? 'checked' : ''} 
                            onchange="selectCalendarUrl('${cal.url}')">
-                    <label for="calendarUrl${i}" style="font-weight:600; margin-left:8px; cursor:pointer;">${cal.nom}</label>
+                    <label for="calendarUrl${i}">${cal.nom}</label>
                 </div>`;
             });
             
@@ -791,22 +718,21 @@
         };
 
         window.selectCalendarUrl = function(url) {
-            localStorage.setItem('selectedCalendarUrl', url);
+            window.localStorage.setItem('selectedCalendarUrl', url);
             closeCalendarSelector();
             loadSchedule();
         };
 
-        // ============= CHARGEMENT INITIAL =============
         async function loadSchedule() {
             showLoading();
             try {
-                const userEmail = localStorage.getItem('userEmail');
+                const userEmail = window.localStorage.getItem('userEmail');
                 if (!userEmail) throw new Error('Veuillez vous connecter');
                 
                 const calendars = await getCalendarListFromFirebase(userEmail);
                 if (!calendars.length) throw new Error('Aucun emploi du temps trouvé');
                 
-                const selectedUrl = localStorage.getItem('selectedCalendarUrl') || calendars[0].url;
+                const selectedUrl = window.localStorage.getItem('selectedCalendarUrl') || calendars[0].url;
                 
                 initFullCalendar(selectedUrl);
             } catch (error) {
@@ -814,18 +740,15 @@
             }
         }
 
-        // ============= DETECTION RESPONSIVE =============
         window.addEventListener('resize', () => {
             const wasMobile = isMobile;
             isMobile = window.innerWidth <= 768;
             
             if (wasMobile !== isMobile && calendar) {
-                // Changer la vue selon l'écran
                 calendar.changeView(isMobile ? 'timeGridDay' : 'timeGridWeek');
             }
         });
 
-        // ============= INIT =============
         loadSchedule();
     </script>
 </body>
