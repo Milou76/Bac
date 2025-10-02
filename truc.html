@@ -400,13 +400,13 @@
 
     <!-- Navigation au-dessus du calendrier -->
     <div class="calendar-navigation" id="calendarNav">
-        <button class="nav-btn" onclick="navigatePrevWeek()">
+        <button class="nav-btn" id="nav1-btn" onclick="navigatePrevWeek()">
             ← Semaine précédente
         </button>
         <button class="today-btn" id="todayBtn" onclick="navigateToday()">
             📅 Aujourd'hui
         </button>
-        <button class="nav-btn" onclick="navigateNextWeek()">
+        <button class="nav-btn" id="nav2-btn" onclick="navigateNextWeek()">
             Semaine suivante →
         </button>
     </div>
@@ -474,11 +474,17 @@
         }
 function updateTodayBtnText() {
     const btn = document.getElementById('todayBtn');
+    const nav1 = document.getElementById('nav1-btn');
+    const nav2 = document.getElementById('nav2-btn');
     if (!btn) return;
     if (window.innerWidth <= 768) {
         btn.textContent = "📅";
+        nav1.textContent = "← Précédent";
+        nav2.textContent = "Suivant →";
     } else {
         btn.textContent = "📅 Aujourd'hui";
+        nav1.textContent = "← Semaine précédente";
+        nav2.textContent = "Semaine suivante →";
     }
 }
 
