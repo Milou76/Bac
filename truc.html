@@ -450,56 +450,23 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ical.js@1.5.0/build/ical.min.js"></script>
+    <!-- html2canvas pour l'export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
             <h1>📚 Emploi du Temps</h1>
-            <div class="header-info">
+            <div class="header-controls">
                 <a href="../" class="back-btn">🏠 Accueil</a>
                 <button class="back-btn" onclick="openCalendarSelector()">⚙️ Paramètres</button>
+                <button class="export-btn" onclick="exportCalendar()">📸 Exporter</button>
             </div>
         </div>
     </div>
 
-    <!-- Mobile: Vue calendrier -->
-    <div class="mobile-calendar-view" id="mobileCalendarView" style="display:none;">
-        <div class="mobile-week-navigation">
-            <button onclick="previousWeek()">‹</button>
-            <span id="currentWeekTitle">Semaine du 2 Oct</span>
-            <button onclick="nextWeek()">›</button>
-        </div>
-        
-        <div class="mobile-week-days">
-            <div class="mobile-day-column" data-day="0">
-                <div class="mobile-day-header">Lun</div>
-                <div class="mobile-day-date" id="date-0"></div>
-                <div class="mobile-day-events" id="events-0"></div>
-            </div>
-            <div class="mobile-day-column" data-day="1">
-                <div class="mobile-day-header">Mar</div>
-                <div class="mobile-day-date" id="date-1"></div>
-                <div class="mobile-day-events" id="events-1"></div>
-            </div>
-            <div class="mobile-day-column" data-day="2">
-                <div class="mobile-day-header">Mer</div>
-                <div class="mobile-day-date" id="date-2"></div>
-                <div class="mobile-day-events" id="events-2"></div>
-            </div>
-            <div class="mobile-day-column" data-day="3">
-                <div class="mobile-day-header">Jeu</div>
-                <div class="mobile-day-date" id="date-3"></div>
-                <div class="mobile-day-events" id="events-3"></div>
-            </div>
-            <div class="mobile-day-column" data-day="4">
-                <div class="mobile-day-header">Ven</div>
-                <div class="mobile-day-date" id="date-4"></div>
-                <div class="mobile-day-events" id="events-4"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Desktop: FullCalendar -->
+    <!-- FullCalendar -->
+    <!-- FullCalendar -->
     <div id="fullcalendar-container">
         <div id="fullcalendar"></div>
     </div>
@@ -546,9 +513,7 @@
         // Variables globales
         let calendar;
         let allEvents = [];
-        let currentWeekOffset = 0;
         let isMobile = window.innerWidth <= 768;
-        let startX = 0;
 
         // ============= FIREBASE =============
         async function getCalendarListFromFirebase(userEmail) {
@@ -632,12 +597,12 @@
             return '#74b9ff';
         }
 
-        // ============= FULLCALENDAR (Desktop) =============
+        // ============= FULLCALENDAR =============
         function initFullCalendar(icalUrl) {
             const calendarEl = document.getElementById('fullcalendar');
             
             calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
+                initialView: isMobile ? 'timeGridDay' : 'timeGridWeek',
                 locale: 'fr',
                 firstDay: 1,
                 allDaySlot: false,
@@ -647,12 +612,14 @@
                 headerToolbar: {
                     left: 'prev,today,next',
                     center: 'title',
-                    right: ''
+                    right: isMobile ? '' : 'timeGridWeek,timeGridDay'
                 },
                 buttonText: {
                     today: "Aujourd'hui",
-                    prev: "« Semaine préc.",
-                    next: "Semaine suiv. »"
+                    prev: "‹",
+                    next: "›",
+                    week: "Semaine",
+                    day: "Jour"
                 },
                 events: [],
                 eventContent: function(arg) {
@@ -712,99 +679,56 @@
                     });
                 });
 
-                if (isMobile) {
-                    showMobileView();
-                } else {
-                    calendar.addEventSource(allEvents);
-                }
-                
+                calendar.addEventSource(allEvents);
                 hideLoading();
             } catch (error) {
                 showError("Impossible de charger le calendrier : " + error.message);
             }
         }
 
-        // ============= VUE MOBILE (calendrier semaine) =============
-        function showMobileView() {
-            document.getElementById('fullcalendar-container').style.display = 'none';
-            document.getElementById('mobileCalendarView').style.display = 'block';
-            
-            renderMobileWeek();
-            initSwipeGestures();
-        }
+        // ============= EXPORT PNG/JPG =============
+        window.exportCalendar = async function() {
+            const btn = document.querySelector('.export-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Export...';
+            btn.disabled = true;
 
-        function renderMobileWeek() {
-            const weekStart = getMonday(new Date());
-            weekStart.setDate(weekStart.getDate() + (currentWeekOffset * 7));
-
-            // Titre de la semaine
-            const weekEnd = new Date(weekStart);
-            weekEnd.setDate(weekEnd.getDate() + 4);
-            const monthStart = weekStart.toLocaleDateString('fr-FR', { month: 'short' });
-            const monthEnd = weekEnd.toLocaleDateString('fr-FR', { month: 'short' });
-            
-            document.getElementById('currentWeekTitle').textContent = 
-                `Semaine du ${weekStart.getDate()} ${monthStart}`;
-
-            // Pour chaque jour de la semaine
-            for (let i = 0; i < 5; i++) {
-                const dayDate = new Date(weekStart);
-                dayDate.setDate(dayDate.getDate() + i);
+            try {
+                const calendarEl = document.getElementById('fullcalendar');
                 
-                // Date du jour
-                document.getElementById(`date-${i}`).textContent = dayDate.getDate();
-                
-                // Highlight aujourd'hui
-                const column = document.querySelector(`[data-day="${i}"]`);
-                const today = new Date();
-                if (dayDate.toDateString() === today.toDateString()) {
-                    column.classList.add('today');
-                } else {
-                    column.classList.remove('today');
-                }
-
-                // Events du jour
-                const dayEvents = allEvents.filter(event => {
-                    const eventDate = new Date(event.start);
-                    return eventDate.toDateString() === dayDate.toDateString();
-                }).sort((a, b) => a.start - b.start);
-
-                const eventsContainer = document.getElementById(`events-${i}`);
-                eventsContainer.innerHTML = '';
-
-                dayEvents.forEach(event => {
-                    const eventDiv = document.createElement('div');
-                    eventDiv.className = 'mobile-event-item';
-                    eventDiv.style.backgroundColor = event.backgroundColor;
-                    eventDiv.title = `${event.title}\n${formatTime(event.start)} - ${formatTime(event.end)}${event.extendedProps.professor ? '\n👤 ' + event.extendedProps.professor : ''}${event.location ? '\n📍 ' + event.location : ''}`;
-                    
-                    eventDiv.innerHTML = `
-                        <div class="mobile-event-time">${event.start.getHours()}h${event.start.getMinutes().toString().padStart(2, '0')}</div>
-                        <div class="mobile-event-title">${truncateText(event.title, 30)}</div>
-                    `;
-                    
-                    eventsContainer.appendChild(eventDiv);
+                // Capturer le calendrier
+                const canvas = await html2canvas(calendarEl, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    logging: false,
+                    useCORS: true
                 });
 
-                // Message si pas de cours
-                if (dayEvents.length === 0) {
-                    eventsContainer.innerHTML = '<div class="no-event">Pas de cours</div>';
-                }
+                // Convertir en blob
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    const date = new Date().toLocaleDateString('fr-FR').replace(/\//g, '-');
+                    link.download = `emploi-du-temps-${date}.png`;
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+
+                    btn.textContent = '✅ Exporté !';
+                    setTimeout(() => {
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                    }, 2000);
+                }, 'image/png');
+
+            } catch (error) {
+                console.error('Erreur export:', error);
+                btn.textContent = '❌ Erreur';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }, 2000);
             }
-        }
-
-        function truncateText(text, maxLength) {
-            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-        }
-
-        window.previousWeek = function() {
-            currentWeekOffset--;
-            renderMobileWeek();
-        };
-
-        window.nextWeek = function() {
-            currentWeekOffset++;
-            renderMobileWeek();
         };
 
         function formatTime(date) {
@@ -816,28 +740,6 @@
             const day = date.getDay();
             const diff = date.getDate() - day + (day === 0 ? -6 : 1);
             return new Date(date.setDate(diff));
-        }
-
-        // ============= SWIPE GESTURES =============
-        function initSwipeGestures() {
-            const mobileView = document.getElementById('mobileCalendarView');
-            
-            mobileView.addEventListener('touchstart', (e) => {
-                startX = e.touches[0].clientX;
-            }, { passive: true });
-
-            mobileView.addEventListener('touchend', (e) => {
-                const endX = e.changedTouches[0].clientX;
-                const diffX = startX - endX;
-
-                if (Math.abs(diffX) > 70) {
-                    if (diffX > 0) {
-                        window.nextWeek();
-                    } else {
-                        window.previousWeek();
-                    }
-                }
-            }, { passive: true });
         }
 
         // ============= UI HELPERS =============
@@ -906,11 +808,7 @@
                 
                 const selectedUrl = localStorage.getItem('selectedCalendarUrl') || calendars[0].url;
                 
-                if (!isMobile) {
-                    initFullCalendar(selectedUrl);
-                } else {
-                    await loadEventsIntoCalendar(selectedUrl);
-                }
+                initFullCalendar(selectedUrl);
             } catch (error) {
                 showError(error.message);
             }
@@ -921,8 +819,9 @@
             const wasMobile = isMobile;
             isMobile = window.innerWidth <= 768;
             
-            if (wasMobile !== isMobile) {
-                location.reload(); // Recharger si changement mobile/desktop
+            if (wasMobile !== isMobile && calendar) {
+                // Changer la vue selon l'écran
+                calendar.changeView(isMobile ? 'timeGridDay' : 'timeGridWeek');
             }
         });
 
