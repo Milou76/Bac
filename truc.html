@@ -147,7 +147,33 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
         }
+.swipe-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 0.75rem;
+    color: #7f8c8d;
+    margin: 10px 0 0 0;
+}
 
+.swipe-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.swipe-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.swipe-dot.active {
+    background: white;
+    transform: scale(1.2);
+}
         .schedule-container {
             max-width: 1200px;
             margin: 0 auto 20px;
@@ -416,15 +442,22 @@
             Semaine suivante →
         </button>
     </div>
-<div id="mobileDayNav" style="display:none; justify-content:center; gap:12px; margin:10px 0;">
-    <button class="nav-btn" id="mobilePrevDay" onclick="navigatePrevDay()">← Jour précédent</button>
-    <button class="nav-btn" id="mobileNextDay" onclick="navigateNextDay()">Jour suivant →</button>
+    <!-- Indicateur de navigation mobile -->
+<div class="swipe-indicator" id="swipeIndicator" style="display:none;">
+    <span>← Glissez pour naviguer →</span>
+    <div class="swipe-dots">
+        <div class="swipe-dot"></div>
+        <div class="swipe-dot"></div>
+        <div class="swipe-dot"></div>
+    </div>
+</div>
 </div>
     <div id="fullcalendar-container">
         <div class="schedule-container">
             <div id="fullcalendar"></div>
         </div>
     </div>
+
 
     <div id="loading" class="loading" style="display:none;">
         <div class="spinner"></div>
@@ -504,6 +537,11 @@ function updateMobileDayNav() {
         mobileNav.style.display = 'none';
     }
 }
+document.getElementById('calendarSelectorModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCalendarSelector();
+    }
+});
 window.navigatePrevDay = function() {
     if (calendar) {
         calendar.prev();
@@ -514,6 +552,44 @@ window.navigateNextDay = function() {
         calendar.next();
     }
 };
+function updateSwipeIndicator() {
+    const indicator = document.getElementById('swipeIndicator');
+    if (window.innerWidth <= 768) {
+        indicator.style.display = 'flex';
+    } else {
+        indicator.style.display = 'none';
+    }
+}
+let touchStartX = null;
+let touchEndX = null;
+
+function handleTouchStart(e) {
+    if (window.innerWidth > 768) return;
+    touchStartX = e.touches[0].clientX;
+}
+
+function handleTouchEnd(e) {
+    if (window.innerWidth > 768) return;
+    touchEndX = e.changedTouches[0].clientX;
+    if (touchStartX === null || touchEndX === null) return;
+    const deltaX = touchEndX - touchStartX;
+    if (Math.abs(deltaX) > 50) {
+        if (deltaX < 0) {
+            // Swipe gauche : jour suivant
+            navigateNextDay();
+        } else {
+            // Swipe droite : jour précédent
+            navigatePrevDay();
+        }
+    }
+    touchStartX = null;
+    touchEndX = null;
+}
+
+document.getElementById('fullcalendar').addEventListener('touchstart', handleTouchStart, { passive: true });
+document.getElementById('fullcalendar').addEventListener('touchend', handleTouchEnd, { passive: true });
+window.addEventListener('resize', updateSwipeIndicator);
+window.addEventListener('DOMContentLoaded', updateSwipeIndicator);
 window.addEventListener('resize', updateMobileDayNav);
 window.addEventListener('DOMContentLoaded', updateMobileDayNav);
 window.addEventListener('resize', updateTodayBtnText);
