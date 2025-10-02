@@ -171,7 +171,7 @@
             display: none !important; /* On cache la toolbar par défaut */
         }
 
-        .fc-col-header-cell {
+        .fc-col-header-cell , .fc-col-header-cell.fc-day-today{
             background: #3498db !important;
             color: white !important;
             border: none !important;
@@ -181,7 +181,7 @@
         }
 
         .fc-timegrid-slot {
-            height: 60px !important;
+            height: 30px !important;
             border-color: #dee2e6 !important;
         }
 
@@ -201,12 +201,15 @@
         }
 
         .fc-event:hover {
+            
             transform: translateX(2px) !important;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
         }
 
         .fc-day-today {
-            background: rgba(52, 152, 219, 0.08) !important;
+        color: #2c3e50;
+        background: #dff9fb !important;
+        
         }
 
         .fc-scrollgrid {
@@ -400,7 +403,7 @@
         <button class="nav-btn" onclick="navigatePrevWeek()">
             ← Semaine précédente
         </button>
-        <button class="today-btn" onclick="navigateToday()">
+        <button class="today-btn" id="todayBtn" onclick="navigateToday()">
             📅 Aujourd'hui
         </button>
         <button class="nav-btn" onclick="navigateNextWeek()">
@@ -469,7 +472,18 @@
                 }))
                 .filter(cal => cal.url);
         }
+function updateTodayBtnText() {
+    const btn = document.getElementById('todayBtn');
+    if (!btn) return;
+    if (window.innerWidth <= 768) {
+        btn.textContent = "📅";
+    } else {
+        btn.textContent = "📅 Aujourd'hui";
+    }
+}
 
+window.addEventListener('resize', updateTodayBtnText);
+window.addEventListener('DOMContentLoaded', updateTodayBtnText);
         function extractProfessor(description) {
             if (!description) return "";
             const lines = description
